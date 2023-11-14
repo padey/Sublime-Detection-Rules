@@ -16,4 +16,4 @@ source: |
           and not profile.by_sender().any_false_positives
         )
     )
-      and sender.email.domain.root_domain == "onmicrosoft.com"
+    and sender.email.domain.root_domain == "onmicrosoft.com"
