@@ -1,0 +1,26 @@
+name: "Info: BULK Mail"
+description: |
+  Cisco classifies these messages as advertising messages sent by unrecognized marketing groups, for example, newsletters from TechTarget, a technology media company.
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://www.cisco.com/c/en/us/td/docs/security/esa/esa12-0/user_guide/b_ESA_Admin_Guide_12_0/b_ESA_Admin_Guide_chapter_01101.html
+source: |
+type.inbound
+and ( 
+    strings.starts_with(subject.subject, '[BULK]')
+    )
+and (
+  (
+    sender.email.domain.root_domain in $free_email_providers
+    and sender.email.email not in $sender_emails
+  )
+  or (
+    sender.email.domain.root_domain not in $free_email_providers
+    and sender.email.domain.domain in $sender_domains
+  )
+)
+tags:
+  - "Info"
