@@ -8,8 +8,8 @@ authors:
 references:
   - https://twitter.com/spamhaus/status/1722667197892317314
 source: |
-type.inbound
-and any(body.links,
+  type.inbound
+  and any(body.links,
         .href_url.domain.domain == "adclick.g.doubleclick.net"
         and regex.icontains(.href_url.url, '/adurl=(https?)/g')
         or regex.icontains(.href_url.url, '\&\&adurl')
