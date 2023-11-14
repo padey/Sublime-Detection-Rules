@@ -1,0 +1,19 @@
+name: "Abuse: Sending from onmicrosoft.com domain
+description: |
+  WORK IN PROGRESS, False-Positive possible! The aim of this rule is to recognise emails where spear phishing is carried out with Onmicrosoft domains. The attacker creates a tenant that is very similar to a legitimate company. 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+  type.inbound
+    and (
+        profile.by_sender().prevalence in ("new", "outlier")
+        or (
+          profile.by_sender().any_messages_malicious_or_spam
+          and not profile.by_sender().any_false_positives
+        )
+    )
+      and sender.email.domain.root_domain == "onmicrosoft.com"
