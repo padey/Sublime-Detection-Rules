@@ -9,10 +9,10 @@ references:
   - https://www.cisco.com/c/en/us/td/docs/security/esa/esa12-0/user_guide/b_ESA_Admin_Guide_12_0/b_ESA_Admin_Guide_chapter_01101.html
 source: |
   type.inbound
-  and ( 
+    and ( 
       strings.starts_with(subject.subject, '[BULK]')
       )
-  and (
+    and (
     (
       sender.email.domain.root_domain in $free_email_providers
       and sender.email.email not in $sender_emails
@@ -22,5 +22,3 @@ source: |
       and sender.email.domain.domain in $sender_domains
     )
   )
-tags:
-  - "Info"
