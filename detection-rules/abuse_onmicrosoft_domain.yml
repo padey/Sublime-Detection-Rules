@@ -1,4 +1,4 @@
-name: "Abuse: Sending from onmicrosoft.com domain
+name: "Abuse: Sending from onmicrosoft.com domain"
 description: |
   WORK IN PROGRESS, False-Positive possible! The aim of this rule is to recognise emails where spear phishing is carried out with Onmicrosoft domains. The attacker creates a tenant that is very similar to a legitimate company. 
 type: "rule"
