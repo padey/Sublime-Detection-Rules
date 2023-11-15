@@ -1,4 +1,4 @@
-name: "Info: BULK Mail"
+name: "Info: Marketing Mail"
 description: |
   Cisco classifies these messages as advertising messages sent by unrecognized marketing groups, for example, newsletters from TechTarget, a technology media company.
 type: "rule"
