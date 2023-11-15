@@ -9,7 +9,14 @@ references:
   - internal
 source: |
   type.inbound
-    and sender.email.domain.root_domain == "onmicrosoft.com"
-      and (profile.by_sender().prevalence in ("new", "outlier")
-          or (profile.by_sender().any_messages_malicious_or_spam
-            and not profile.by_sender().any_false_positive))
+  and (
+      profile.by_sender().prevalence in ("new", "outlier")
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+  )
+  and sender.email.domain.root_domain == "onmicrosoft.com"
+  //and not(
+  //  strings.starts_with(subject.subject, "Unzustellbar:*")
+  //)
