@@ -1,6 +1,6 @@
 name: "Link: Adclick Doubleclick Redirect Abuse"
 description: |
-  Threat actors sending out a malspam campaign that abuses Google' DoubleClick Ad network as an open redirect to lure people into downloading a malicious .url file that leads to DarkGate.
+  Threat actors sending out a malspam campaign that abuses Google DoubleClick Ad network as an open redirect to lure people into downloading a malicious .url file that leads to DarkGate.
 type: "rule"
 severity: "high"
 authors:
@@ -8,11 +8,11 @@ authors:
 references:
   - https://twitter.com/spamhaus/status/1722667197892317314
 source: |
-  type.inbound
-    and any(body.links,
-        .href_url.domain.domain == "adclick.g.doubleclick.net"
-        and regex.icontains(.href_url.url, '/adurl=(https?)/g')
-        or regex.icontains(.href_url.url, '\&\&adurl')
+    type.inbound
+        and any(body.links,
+           .href_url.domain.domain == "adclick.g.doubleclick.net"
+            and regex.icontains(.href_url.url, '/adurl=(https?)/g')
+            or regex.icontains(.href_url.url, '\&\&adurl')
       )
 tags:
   - "Attack Surface Reduction"
