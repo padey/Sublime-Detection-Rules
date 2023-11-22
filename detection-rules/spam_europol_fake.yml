@@ -1,0 +1,32 @@
+name: "Spam: Europol (...) Fake Mails"
+description: |
+    Diese Mails sind natürlich gefälscht und stammen nicht von den genannten Behörden. Personen, die eine solche E-Mail erhalten haben, werden gebeten, den Anhang nicht zu öffnen und/oder keine persönlichen Daten an die angegebenen E-Mail-Adressen zurückzusenden. 
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://www.polizei-praevention.de/aktuelles/vorladung-von-europol-europaeisches-polizeiamt-oder-interpol-per-mail-bekommen.html
+source: |
+    type.inbound
+    and profile.by_sender().prevalence in ("new", "outlier")
+    and any(attachments,
+      any(file.explode(.),
+        strings.icontains(.scan.ocr.raw, "Europol")
+        or strings.icontains(.scan.ocr.raw, "Bundespolizei")
+        or strings.icontains(.scan.ocr.raw, "Bundesnachrichtendienst")
+        or strings.icontains(.scan.ocr.raw, "BND")
+        or strings.icontains(.scan.ocr.raw, "DIREKTION DER KRIMINELLEN POLIZEI")
+        or strings.icontains(.scan.ocr.raw, "BKA")
+        or strings.icontains(.scan.ocr.raw, "Bundeskriminalamtes")
+        or strings.icontains(.scan.ocr.raw, "Europäisches Polizeiamt")
+        or strings.icontains(.scan.ocr.raw, "Interpol")
+      ) and any(file.explode(.),
+        strings.icontains(.scan.ocr.raw, "Kinderpornografie")
+        or strings.icontains(.scan.ocr.raw, "Padophilie")
+        or strings.icontains(.scan.ocr.raw, "Exhibitionismus")
+        or strings.icontains(.scan.ocr.raw, "Cyberpornografie")
+        or strings.icontains(.scan.ocr.raw, "Sexhandel")
+    
+      )
+    )
