@@ -1,0 +1,30 @@
+name: "Phishing: Scattered Spider Approaching"
+description: |
+  Scattered Spider intrusions often begin with broad phishing [T1566] and smishing [T1660] attempts against a target using victim-specific crafted domains, such as the domains listed in Table 3 [T1583.001].
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a
+source: |
+    type.inbound
+    and any(body.links,
+           regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.com\b/g')
+    ) and (
+        (
+          not profile.by_sender().solicited
+          and profile.by_sender().prevalence in ("new", "outlier")
+        )
+        or (
+          profile.by_sender().any_messages_malicious_or_spam
+          and not profile.by_sender().any_false_positives
+        )
+)
+attack_types:
+  - "Credential Phishing"
+tactics_and_techniques:
+  - "Social engineering"
+detection_methods:
+  - "URL analysis"
+  - "Sender analysis"
