@@ -1,6 +1,5 @@
 # Sublime Detection Rules
-This repo contains all of my personal Sublime Security Detection Rules.
-everything is work in progress. 
+This repo contains all my personal Sublime Security detection rules. Everything is a work in progress and should be reviewed before use in production. All these rules are in production use on our Sublime.
 
 Rule Name | Rule Description | Rule Goal
 -------- | -------- | --------
