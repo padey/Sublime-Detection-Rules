@@ -1,6 +1,6 @@
 name: "Phishing: Scattered Spider Approaching"
 description: |
-  Scattered Spider intrusions often begin with broad phishing [T1566] and smishing [T1660] attempts against a target using victim-specific crafted domains, such as the domains listed in Table 3 [T1583.001].
+  Brace yourself Scattered Spider is coming for you, maybe. Intrusions often begin with broad phishing [T1566] and smishing [T1660] attempts against a target using victim-specific crafted domains, such as the domains listed in Table 3 [T1583.001].
 type: "rule"
 severity: "high"
 authors:
