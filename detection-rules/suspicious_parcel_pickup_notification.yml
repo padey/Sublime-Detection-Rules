@@ -26,5 +26,8 @@ source: |
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*eilig*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*schnell*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Sendungsaufruf*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*verlangt*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Abholung*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Aufmerksamkeit*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*wartet*")
           )
