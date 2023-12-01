@@ -16,11 +16,13 @@ source: |
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Versanddienstleister*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketdienst*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketzustelldienst*")
-          ) and 2 of (
+          ) and 3 of (
+            // Oh my... this is a messy one. :D
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*dringend*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*wichtig*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*zeitnah*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Link*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*sofort*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Kooperation*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*bereitsteht*"), 
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*eilig*"),
