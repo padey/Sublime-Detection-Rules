@@ -1,0 +1,30 @@
+name: "Fake parcel pick-up with suspicious language"
+description: |
+    The text contains keywords for picking up a parcel, contains suspicious formulations. Currently only available in German, sorry ;)
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Research
+source: |
+        type.inbound
+            and profile.by_sender().prevalence in ("new", "outlier")
+            and sender.email.domain.domain in $free_email_providers
+            and length(body.links) > 0
+            and 1 of (
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Versanddienstleister*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketdienst*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketzustelldienst*")
+          ) and 1 of (
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*dringend*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*wichtig*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*zeitnah*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Link*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Kooperation*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*bereitsteht*"), 
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*eilig*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*schnell*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Sendungsaufruf*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*wartet*")
+          )
