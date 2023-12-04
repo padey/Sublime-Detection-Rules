@@ -9,3 +9,4 @@ info_cisco_esa_marketing_mail.yml   | The Cisco ESA (Email Security Appliance) c
 link_adclick_doubleclick_abuse.yml   | The Google Adclick network is generally an advertising network. Attackers use Adclick links to achieve a redirect to a malicious URL.    | Medium
 scattered_spider.yml   | Scattered Spider uses separate domains for each victim. These domains can currently be found quite easily using regex. The attack pattern can of course also change. See CISA recommendation on Scattered Spider.   | High
 spam_europol_fake.yml   | Attackers posing as "EUROPOL" are mainly active in Europe.   | Low
+suspicious_parcel_pickup_notification.yml | Phishing with fake pickup notifications | Medium
