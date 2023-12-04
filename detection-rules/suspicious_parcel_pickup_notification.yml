@@ -15,6 +15,7 @@ source: |
             and 1 of (
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Versanddienstleister*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketdienst*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*vom Lieferdienst*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Ihr Paketzustelldienst*")
           ) and 2 of (
             // Oh my... this is a messy one. :D
@@ -30,6 +31,7 @@ source: |
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Sendungsaufruf*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*verlangt*"),
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Abholung*"),
-            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Aufmerksamkeit*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Paketabholung*"),
+            strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*Aufmerksamkeit*"),            
             strings.ilike(coalesce(body.html.display_text, body.plain.raw), "*wartet*")
           )
