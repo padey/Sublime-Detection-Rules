@@ -12,7 +12,7 @@ source: |
     type.inbound
     and any(body.links,
            //old: regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.(com|co|net|us|help)\b/g')
-           or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
+           regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
            or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)okta|okta(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
            or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')    ) and ((
           not profile.by_sender().solicited
