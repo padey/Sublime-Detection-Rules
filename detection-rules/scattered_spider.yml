@@ -14,16 +14,9 @@ source: |
            //old: regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.(com|co|net|us|help)\b/g')
            regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
            or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)okta|okta(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
-           or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')) 
-           and ((
-          not profile.by_sender().solicited
-          and profile.by_sender().prevalence in ("new", "outlier")
-        )or (
-          profile.by_sender().any_messages_malicious_or_spam
-          and not profile.by_sender().any_false_positives
-        )
-      )
-
+           or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
+           ) 
+  
 attack_types:
   - "Credential Phishing"
 tactics_and_techniques:
