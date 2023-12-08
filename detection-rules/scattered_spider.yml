@@ -7,11 +7,14 @@ authors:
   - twitter: "affje0x65"
 references:
   - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a
+  - https://www.silentpush.com/blog/scattered-spider
 source: |
     type.inbound
     and any(body.links,
-           regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.com\b/g')
-    ) and ((
+           //old: regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.(com|co|net|us|help)\b/g')
+           or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
+           or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)okta|okta(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
+           or regex.icontains(.href_url.url, '/(\b[a-zA-Z(\b[a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)\b[a-zA-Z(\b[a-zA-Z0-9]+)\.(com|co|net|us|help)/g')    ) and ((
           not profile.by_sender().solicited
           and profile.by_sender().prevalence in ("new", "outlier")
         )or (
