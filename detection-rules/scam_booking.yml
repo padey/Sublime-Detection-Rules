@@ -8,8 +8,8 @@ authors:
 references:
   - internal
 source: |
-	type.inbound
-	and sender.email.domain.domain == "booking.com"
-	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "urgency")
-	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "request")
-	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "financial")
+   type.inbound
+   and sender.email.domain.domain == "booking.com"
+   and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "urgency")
+   and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "request")
+   and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "financial")
