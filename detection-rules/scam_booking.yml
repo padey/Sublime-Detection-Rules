@@ -1,1 +1,15 @@
-
+name: "Scam: Phishing from booking.com domain"
+description: |
+  WORK IN PROGRESS, False-Positive possible! A gang of cyber crooks is apparently behind the scam, systematically infecting hotels with malware and then abusing their internal access to the Booking platform. This allows the criminals to fish out payment data much more efficiently than with untargeted emails: not only do they have access to real booking data, but they can also use the booking provider's trusted messaging system. 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+	type.inbound
+	and sender.email.domain.domain == "booking.com"
+	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "urgency")
+	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "request")
+	and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "financial")
