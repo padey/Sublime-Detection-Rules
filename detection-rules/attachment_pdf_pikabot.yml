@@ -1,0 +1,34 @@
+name: "Attachment: Pika Pika - PikaBot PDF with embedded links"
+description: |
+  The current PikaBot wave uses PDF files with a malicious link to supposedly OneDrive or SharePoint Online. 
+type: "rule"
+severity: "High"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+  - https://malpedia.caad.fkie.fraunhofer.de/details/win.pikabot
+  - https://twitter.com/Cryptolaemus1/status/1734706740455711031
+  - https://bazaar.abuse.ch/browse/signature/Pikabot/
+source: |
+        type.inbound
+        and any(attachments,
+        any(file.explode(.),
+          strings.icontains(.scan.ocr.raw, "Download")
+          and strings.icontains(.scan.ocr.raw, "Microsoft")
+        )
+      ) and any(attachments,
+        any(file.explode(.),
+          any(.scan.strings.strings, strings.ilike(., "*ReportLab Generated PDF document*"))
+        )
+      )
+
+tags:
+  - "Malfam: PikaBot"
+attack_types:
+  - "Malware/Ransomware"
+tactics_and_techniques:
+  - "Evasion"
+  - "PDF"
+detection_methods:
+  - "File analysis"
