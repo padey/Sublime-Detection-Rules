@@ -17,10 +17,10 @@ source: |
             strings.icontains(.scan.ocr.raw, "Download")
             and strings.icontains(.scan.ocr.raw, "Microsoft")
             )) and any(attachments,
-                    any(file.explode(.),
-                    any(.scan.strings.strings, strings.ilike(., "*ReportLab Generated PDF document*"))
-                        )    
-                      )
+               any(file.explode(.),
+               any(.scan.strings.strings, strings.ilike(., "*ReportLab Generated PDF document*"))
+              )    
+         )
 tags:
   - "Malfam: PikaBot"
 attack_types:
