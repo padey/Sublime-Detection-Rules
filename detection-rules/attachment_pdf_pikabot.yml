@@ -14,7 +14,7 @@ source: |
         type.inbound
         and any(attachments,
           any(file.explode(.),
-            strings.icontains(.scan.ocr.raw, "Dowload")
+            strings.icontains(.scan.ocr.raw, "Download")
             and strings.icontains(.scan.ocr.raw, "Microsoft")
             )) and any(attachments,
                any(file.explode(.),
