@@ -2,7 +2,7 @@ name: "Attachment: Pika Pika - PikaBot PDF with embedded links"
 description: |
   The current PikaBot wave uses PDF files with a malicious link to supposedly OneDrive or SharePoint Online. 
 type: "rule"
-severity: "High"
+severity: "high"
 authors:
   - twitter: "affje0x65"
 references:
