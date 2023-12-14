@@ -11,18 +11,21 @@ references:
   - https://twitter.com/Cryptolaemus1/status/1734706740455711031
   - https://bazaar.abuse.ch/browse/signature/Pikabot/
 source: |
-        type.inbound
-        and any(attachments,
-          any(file.explode(.),
-            strings.icontains(.scan.ocr.raw, "Download")
-            and strings.icontains(.scan.ocr.raw, "Microsoft")
-            )) and any(attachments,
-               any(file.explode(.),
-               any(.scan.strings.strings, 
-               strings.ilike(., "*ReportLab Generated PDF document*")
-               )
-              )    
-         )
+      type.inbound
+      and any(attachments,.file_extension == "pdf" and
+              any(file.explode(.),
+                  //thanks for the typo, loser.
+                  strings.icontains(.scan.ocr.raw, "Dowland")
+                  and strings.icontains(.scan.ocr.raw, "Microsoft")
+                  )) and any(attachments,
+                     any(file.explode(.),
+                     any(.scan.strings.strings, 
+                     strings.ilike(., "*ReportLab Generated PDF document*")
+                      )
+                  ) 
+              )and any(attachments, 
+               regex.match(.file_name, '[A-Z0-9]+\.pdf')
+          )
 tags:
   - "Malfam: PikaBot"
 attack_types:
