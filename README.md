@@ -1,5 +1,8 @@
 # Sublime Detection Rules
-This repo contains all my personal Sublime Security detection rules. Everything is a work in progress and should be reviewed before use in production. All these rules are in production use on our Sublime.
+The aim of my detection rules is to detect attacks even without the LinkAnalysis and WHOIS features of Sublim Security. Since these two features process data in the cloud and not on-prem, there are always data protection concerns, at least in the EU. :)
+
+> Everything is a work in progress and should be reviewed before use in production. All these rules are in production use on our Sublime.
+
 
 Rule Name | Rule Description | Rule Criticality
 -------- | -------- | --------
