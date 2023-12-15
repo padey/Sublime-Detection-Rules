@@ -3,6 +3,8 @@ description: |
   This rule analyses image attachments and a screenshot of an email for QR codes that contain URLs from root domains that are not highly trusted and from first-time senders.
 type: "rule"
 severity: "medium"
+authors:
+  - twitter: "affje0x65"
 source: |
   type.inbound
   and profile.by_sender().prevalence in ("new", "outlier")
