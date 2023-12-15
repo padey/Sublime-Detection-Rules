@@ -18,13 +18,13 @@ source: |
                     strings.icontains(.scan.ocr.raw, "Dowland")
                     and strings.icontains(.scan.ocr.raw, "Microsoft")
                     ) or any(file.explode(.),
-                    //thanks for the typo, loser.
+                    //AdobeCloud.
                     strings.icontains(.scan.ocr.raw, "Downland")
                     and strings.icontains(.scan.ocr.raw, "Adobe")
                     or strings.icontains(.scan.ocr.raw, "AdobeCloud")
                     ) 
                     or any(file.explode(.),
-                    //thanks for the typo, loser.
+                    //Acrobat Reader "invoice.pdf".
                     strings.icontains(.scan.ocr.raw, "Acrobat")
                     and strings.icontains(.scan.ocr.raw, "View Document")
                     or strings.icontains(.scan.ocr.raw, "Download Document")
