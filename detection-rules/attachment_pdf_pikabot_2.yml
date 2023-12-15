@@ -1,4 +1,4 @@
-name: "Attachment: Pika Pika - PikaBot PDF with embedded links"
+name: "Attachment: PikaBot PDF with embedded links"
 description: |
   The PDF attachment contains malicious samples that point to PikaBot. 
 type: "rule"
