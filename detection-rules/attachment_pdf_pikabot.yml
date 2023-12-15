@@ -17,30 +17,18 @@ source: |
                     //thanks for the typo, loser.
                     strings.icontains(.scan.ocr.raw, "Dowland")
                     and strings.icontains(.scan.ocr.raw, "Microsoft")
-                    ) or any(file.explode(.),
-                    //AdobeCloud.
-                    strings.icontains(.scan.ocr.raw, "Downland")
-                    and strings.icontains(.scan.ocr.raw, "Adobe")
-                    or strings.icontains(.scan.ocr.raw, "AdobeCloud")
-                    ) 
-                    or any(file.explode(.),
-                    //Acrobat Reader "invoice.pdf".
-                    strings.icontains(.scan.ocr.raw, "Acrobat")
-                    and strings.icontains(.scan.ocr.raw, "View Document")
-                    or strings.icontains(.scan.ocr.raw, "Download Document")
-                    or strings.icontains(.scan.ocr.raw, "Pending")
                     ) 
                     ) 
-                    //and any(attachments,
-                    // any(file.explode(.),
-                    // any(.scan.strings.strings, 
-                    // strings.ilike(., "*ReportLab Generated PDF document*")
-                    // )
-                    //) 
-                   //)    
-                //and any(attachments, 
-                //regex.match(.file_name, '[A-Z0-9]+\.pdf')
-                //)
+                    and any(attachments,
+                     any(file.explode(.),
+                     any(.scan.strings.strings, 
+                     strings.ilike(., "*ReportLab Generated PDF document*")
+                     )
+                    ) 
+                   )    
+                and any(attachments, 
+                regex.match(.file_name, '[A-Z0-9]+\.pdf')
+                )
 tags:
   - "Malfam: PikaBot"
 attack_types:
