@@ -1,0 +1,26 @@
+name: "Phishing: Storm 0539 Holiday Season"
+description: |
+  Microsoft has observed a significant surge in activity associated with the threat actor Storm-0539, known to target retail organizations for gift card fraud and theft using highly sophisticated email and SMS phishing during the holiday shopping season.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://twitter.com/MsftSecIntel/status/1735351713907773711
+source: |
+        type.inbound
+        and profile.by_sender().prevalence in ("new", "outlier")
+        and any(body.links,
+               strings.contains(.href_url.url, '/Udlaps/')
+               or strings.contains(.href_url.url, '/Usrlop/')
+               or strings.contains(.href_url.url, '/adls/index.html')
+               or strings.contains(.href_url.url, '/saml2/index.html')
+        ) 
+
+attack_types:
+  - "Credential Phishing"
+tactics_and_techniques:
+  - "Social engineering"
+detection_methods:
+  - "URL analysis"
+  - "Sender analysis"
