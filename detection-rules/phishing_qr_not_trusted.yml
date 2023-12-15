@@ -25,12 +25,13 @@ source: |
       .scan.qr.type == "url"
   ) or any(attachments,
             (.file_type in $file_types_images or .file_type == "pdf")
-            and any(file.explode(.),
+                and any(file.explode(.),
                     .scan.qr.type == "url"
+                    // False-positive filters from companies that think QR codes in the signature that point to their website are cool 
+                    and .scan.qr.url.domain.root_domain not in (sender.email.domain.root_domain)
   
     )
   ) 
-
 attack_types:
   - "Credential Phishing"
 tactics_and_techniques:
