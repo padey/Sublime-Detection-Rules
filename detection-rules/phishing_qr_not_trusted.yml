@@ -1,0 +1,41 @@
+name: "Link: QR Code from not high trusted sender domain (first-time sender) "
+description: |
+  This rule analyses image attachments and a screenshot of an email for QR codes that contain URLs from root domains that are not highly trusted and from first-time senders.
+type: "rule"
+severity: "medium"
+source: |
+  type.inbound
+  and profile.by_sender().prevalence in ("new", "outlier")
+  and
+    (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(distinct(headers.hops, .authentication_results.dmarc is not null),
+              strings.ilike(.authentication_results.dmarc, "*fail")
+          )
+        )
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
+  
+   and any(file.explode(beta.message_screenshot()),
+      .scan.qr.type == "url"
+  ) or any(attachments,
+            (.file_type in $file_types_images or .file_type == "pdf")
+            and any(file.explode(.),
+                    .scan.qr.type == "url"
+  
+    )
+  ) 
+
+attack_types:
+  - "Credential Phishing"
+tactics_and_techniques:
+  - "QR code"
+  - "Social engineering"
+detection_methods:
+  - "Content analysis"
+  - "Computer Vision"
+  - "QR code analysis"
+  - "Sender analysis"
