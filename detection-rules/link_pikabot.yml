@@ -7,9 +7,8 @@ authors:
   - twitter: "affje0x65"
 references:
   - Internal Research
-  - https://twitter.com/Cryptolaemus1/status/1734706740455711031
-  - https://twitter.com/Cryptolaemus1/status/1734349735836971249
-  - https://twitter.com/Cryptolaemus1/status/1732867665742413887
+  - https://twitter.com/Unit42_Intel/status/1735760477391552670
+  - https://twitter.com/Cryptolaemus1/status/1735666082243875143
 source: |
     type.inbound
         and regex.icontains(body.current_thread.text, '[A-Za-z0-9]\/\?[0-9]')
