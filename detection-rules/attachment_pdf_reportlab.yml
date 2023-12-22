@@ -1,4 +1,4 @@
-name: "Attachment: ReportLab PDF Creator used"
+name: "Attachment: ReportLab PDF Creator (possiblme PikaBot)"
 description: |
   TA577 uses the ReportLab PDF Creator for creating malicious PDF files with embedded links. 
 type: "rule"
