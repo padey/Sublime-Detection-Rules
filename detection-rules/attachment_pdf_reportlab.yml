@@ -1,0 +1,27 @@
+name: "Attachment: ReportLab PDF Creator used"
+description: |
+  TA577 uses the ReportLab PDF Creator for creating malicious PDF files with embedded links. 
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+  - https://twitter.com/Unit42_Intel/status/1735760477391552670
+  - https://twitter.com/Cryptolaemus1/status/1735666082243875143
+source: |
+    type.inbound
+    and profile.by_sender().prevalence in ("new", "outlier")
+    and any(attachments,.file_extension == "pdf" and
+                   any(file.explode(.),
+                   any(.scan.strings.strings, 
+                   strings.ilike(., "*ReportLab Generated PDF document*") or strings.ilike(., "*reportlab.com*")
+                    )
+                ) 
+        )
+tags:
+  - "Malfam: PikaBot"
+attack_types:
+  - "Malware/Ransomware"
+detection_methods:
+  - "File analysis"
