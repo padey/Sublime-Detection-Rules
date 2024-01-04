@@ -1,0 +1,17 @@
+name: "Phishing: Abuse of Azure Communication Services"
+description: |
+  We have observed a recent phishing campaign that abuses Azure Communication Services to redirect to phishing URLs.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound 
+    and any(body.links, 
+        .href_url.domain.domain == "action.azurecomm.net" and
+        strings.icontains(.href_url.query_params, "&url=")
+    )
+
+
