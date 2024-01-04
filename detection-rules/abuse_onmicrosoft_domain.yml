@@ -8,7 +8,7 @@ authors:
 references:
   - internal
 source: |
-  type.inbound
+    type.inbound
     and (
         profile.by_sender().prevalence in ("new", "outlier")
         or (
@@ -17,6 +17,5 @@ source: |
         )
     )
     and sender.email.domain.root_domain == "onmicrosoft.com"
-    //and not(
-    //  strings.starts_with(subject.subject, "Unzustellbar:*")
-    //)
+    // Filter out False-Positive Teams Invites
+    and not strings.icontains(body.plain.raw, "Microsoft Teams")
