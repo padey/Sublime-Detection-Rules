@@ -9,13 +9,17 @@ references:
   - internal
 source: |
     type.inbound
-    and (
-        profile.by_sender().prevalence in ("new", "outlier")
-        or (
-          profile.by_sender().any_messages_malicious_or_spam
-          and not profile.by_sender().any_false_positives
-        )
-    )
     and sender.email.domain.root_domain == "onmicrosoft.com"
-    // Filter out False-Positive Teams Invites
-    and not strings.icontains(body.plain.raw, "Microsoft Teams")
+    and not (
+        // Filter out Microsoft Teams invites etc.
+        strings.icontains(body.plain.raw, 'Microsoft Teams')
+        // Filter out technical messages
+        or strings.icontains(subject.subject, 'Undeliverable:')
+        or strings.icontains(subject.subject, 'Unzustellbar:')
+    )
+    and (
+      profile.by_sender().prevalence in ("new", "outlier")
+      or (
+      profile.by_sender().any_messages_malicious_or_spam
+      and not profile.by_sender().any_false_positives
+         ))
