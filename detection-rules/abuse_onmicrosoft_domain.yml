@@ -12,11 +12,14 @@ source: |
     and sender.email.domain.root_domain == "onmicrosoft.com"
     and not (
         // Filter out technical messages
-        strings.icontains(subject.subject, 'Undeliverable:')
-        or strings.icontains(subject.subject, 'Unzustellbar:')
+        // German Stuff
+        strings.icontains(subject.subject, 'Unzustellbar:')
         or strings.icontains(subject.subject, 'Zugesagt:')
-        or strings.icontains(subject.subject, 'Accepted:')
         or strings.icontains(subject.subject, 'Abwesenheitsnachricht:')
+        or strings.icontains(subject.subject, 'Unzustellbar:')
+        // Englisch Stuff
+        or strings.icontains(subject.subject, 'Undeliverable:')
+        or strings.icontains(subject.subject, 'Accepted:')
         or strings.icontains(subject.subject, 'Out of Office:')
         // Filter out Teams meeting invites etc.
         or strings.icontains(body.html.raw, 'https://teams.microsoft.com/')
