@@ -23,4 +23,5 @@ source: |
         or strings.icontains(subject.subject, 'Out of Office')
         // Filter out Teams meeting invites etc.
         or strings.icontains(body.html.raw, 'https://teams.microsoft.com/')
+        or strings.icontains(body.html.raw, 'https://visit.teams.microsoft.com/')
     )
