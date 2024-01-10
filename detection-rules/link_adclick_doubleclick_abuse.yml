@@ -13,7 +13,15 @@ source: |
            .href_url.domain.domain == "adclick.g.doubleclick.net"
             and regex.icontains(.href_url.url, '/adurl=(https?)/g')
             or regex.icontains(.href_url.url, '\&\&adurl')
+      ) or any(attachments,
+      any(file.explode(.),
+        any(.scan.url.urls,
+           .domain.domain == "adclick.g.doubleclick.net"
+            and regex.icontains(.query_params, '/adurl=(https?)/g')
+            or regex.icontains(.query_params, '\&\&adurl')
       )
+      )
+    )
 tags:
   - "Attack Surface Reduction"
 attack_types:
