@@ -10,7 +10,7 @@ references:
 source: |
   type.inbound
     and ( 
-      strings.starts_with(subject.subject, '[BULK]')
+      strings.starts_with(subject.subject, '[MARKETING]')
       )
     and (
     (
