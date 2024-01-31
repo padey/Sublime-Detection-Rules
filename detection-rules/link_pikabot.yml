@@ -20,6 +20,5 @@ attack_types:
   - "Malware/Ransomware"
 tactics_and_techniques:
   - "Evasion"
-  - "URL"
 detection_methods:
   - "URL analysis"
