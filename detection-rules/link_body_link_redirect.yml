@@ -1,0 +1,42 @@
+name: "Link: Redirect to other URLs in Body Links"
+description: |
+  The URL(s) in the body have indicators for redirection to another URL. 
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+  type.inbound
+  // the original URL has indicators for redirection
+  and any(body.links,
+      strings.contains(.href_url.query_params, "goto")
+      or strings.contains(.href_url.path, "redirect")
+      or strings.contains(.href_url.path, "dst=")
+      
+      )
+  // the query parameters also contain references to another URL
+  and any(body.links,
+      // web
+      strings.contains(.href_url.query_params, "http")
+      or strings.contains(.href_url.query_params, "https")
+      or strings.contains(.href_url.query_params, "www")
+      or strings.contains(.href_url.query_params, "?=//")
+      // ftp
+      or strings.contains(.href_url.query_params, "ftp")
+      // smb
+      or strings.contains(.href_url.query_params, "\\")
+  )   
+  // negate highly trusted sender domains unless they fail DMARC authentication
+    and (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(distinct(headers.hops, .authentication_results.dmarc is not null),
+              strings.ilike(.authentication_results.dmarc, "*fail")
+          )
+        )
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
