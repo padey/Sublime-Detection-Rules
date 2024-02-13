@@ -1,4 +1,4 @@
-name: "Link: Pika Pika - PikaBot link in message body"
+name: "Link: PikaBot link in message body"
 description: |
   A malicious link in the message body that matches the pattern of the current PikaBot attack wave. 
 type: "rule"
