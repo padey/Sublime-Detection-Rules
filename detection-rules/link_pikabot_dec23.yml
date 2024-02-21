@@ -14,7 +14,6 @@ source: |
         and regex.icontains(body.current_thread.text, '[A-Za-z0-9]\/\?[0-9]')
         or any(body.links, 
         regex.icontains(.display_url.url, '[A-Za-z0-9]\/\?[0-9]'))
-        )
 tags:
   - "Malfam: PikaBot"
 attack_types:
