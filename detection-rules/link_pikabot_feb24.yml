@@ -1,0 +1,25 @@
+name: "Link: PikaBot link in message body (Feb 24)"
+description: |
+  A malicious link in the message body that matches the pattern of the current PikaBot attack wave. 
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+  - https://twitter.com/anyrun_app/status/1760284876832473377
+  - https://twitter.com/1ZRR4H/status/1759609478222127515
+source: |
+    type.inbound
+        and any(body.links, 
+        strings.contains(.href_url.url, 'file://')
+        and strings.contains(.href_url.url, '.zip')
+        )
+tags:
+  - "Malfam: PikaBot"
+attack_types:
+  - "Malware/Ransomware"
+tactics_and_techniques:
+  - "Evasion"
+detection_methods:
+  - "URL analysis"
