@@ -2,7 +2,7 @@ name: "Link: Redirect to other URLs in Body Links"
 description: |
   The URL(s) in the body have indicators for redirection to another URL. 
 type: "rule"
-severity: "medium"
+severity: "low"
 authors:
   - twitter: "affje0x65"
 references:

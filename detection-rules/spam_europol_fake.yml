@@ -1,8 +1,8 @@
-name: "Spam: Europol (...) Fake Mails"
+name: "Spam: Europol Fake Mails"
 description: |
     The attackers pretend to be authorities. These emails are to be classified as harmful and are of course fake and do not originate from the named authorities. Persons who have received such an e-mail are asked not to open the attachment and/or not to send any personal data back to the e-mail addresses provided. 
 type: "rule"
-severity: "medium"
+severity: "low"
 authors:
   - twitter: "affje0x65"
 references:

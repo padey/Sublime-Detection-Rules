@@ -11,7 +11,6 @@ references:
 source: |
     type.inbound
     and any(body.links,
-           //old: regex.icontains(.href_url.url, '/\b[a-zA-Z0-9]+-(sso|servicedesk|okta)\.(com|co|net|us|help)\b/g')
            regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
            or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)okta|okta(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
            or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
