@@ -24,7 +24,14 @@ Some of the rules refer to the German/European area, which may lead to false pos
 |----|
 
 
-### Detection Rule Overview
+## Detection Feeds
+So there are two detection feeds in my repo.
+1. **'detection-rules'** = These rules focus mostly generic phishing/spam and cve's. Very **low false positive rate**!
+2. **'emerging-threats-rules'** = These rules will focus on emerging threats. Rules are aggressive so it **may produce more false positives**. 
+
+
+
+## Detection Rule Overview
 
 | Rule Name | Rule Description | Rule Classification | Rule Severity |
 |----|----|----|----|
