@@ -16,13 +16,13 @@ source: |
           and any(body.links,
                    strings.ends_with(.href_url.url, '.zip')
             )
-  )or any(attachments,
+    )or any(attachments,
         any(file.explode(.),
             any(.scan.strings.strings,
                 strings.contains(., "'file://")
             )
         )
-)
+    )
 tags:
   - "Malfam: PikaBot"
 attack_types:
