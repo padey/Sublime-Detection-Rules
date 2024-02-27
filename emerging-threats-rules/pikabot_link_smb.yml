@@ -1,4 +1,4 @@
-name: "Link: PikaBot SMB link in message body"
+name: "Link: PikaBot SMB link in message body or attachment"
 description: |
   Attackers are using a link to SMB share in emails to bypass the warning message about running a potentially malicious file. Downloads a zip file containing a exe file. 
 type: "rule"
