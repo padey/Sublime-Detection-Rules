@@ -28,7 +28,7 @@ source: |
               "xltm"
             )
             and any(file.explode(.),
-                    any(.scan.strings.strings, strings.icontains(., "file://"))
+                    any(.scan.strings.strings, strings.icontains(., "file:///\/\\"))
                     )
             )
 tags:
