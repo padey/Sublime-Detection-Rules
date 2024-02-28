@@ -11,26 +11,23 @@ type: "rule"
 source: |
     type.inbound
     and any(attachments,
-            .file_extension in~ (
-              "doc",
-              "docm",
-              "docx",
-              "dot",
-              "dotm",
-              "pptm",
-              "ppsm",
-              "xlm",
-              "xls",
-              "xlsx",
-              "xlsb",
-              "xlsm",
-              "xlt",
-              "xltm"
+            (
+              (
+                // office files
+                .file_extension in~ $file_extensions_macros
+              )
+              and any(file.explode(.),
+                      // matches a ipv4
+                      any(.scan.strings.strings,
+                          regex.icontains(.,
+                                          '(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
+                          )
+                          // matches smb
+                          and regex.icontains(., 'file:\/\/')
+                      )
+              )
             )
-            and any(file.explode(.),
-                    any(.scan.strings.strings, strings.icontains(., "file:///\/\\"))
-                    )
-            )
+    )
 tags:
 - 'Malfam: PikaBot'
 - Attachments
