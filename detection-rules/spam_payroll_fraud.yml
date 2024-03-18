@@ -1,0 +1,37 @@
+name: "Spam: Payroll Fraud"
+description: |
+    The fraudster tries to change the bank account for the salary payments. This rule is for German-speaking users only.  
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    // Unknown sender or repeat offender
+    and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    // Only 1 recipients
+    and length(recipients.to) == 1
+    // Body contains Sender Displayname
+    and strings.contains(body.current_thread.text, sender.display_name)
+    // Body contains specific words which are used in frauds
+    and 3 of (
+      regex.icontains(body.current_thread.text,
+                        "(Bankkonto|Gehaltskonto|Bankkontoinformationen)"),
+      regex.icontains(body.current_thread.text, 
+                        "(Zahlung|Zahltag)"),
+      regex.icontains(body.current_thread.text,
+                        "(Gehalt|Gehalts|Gehaltsabrechnung|Gehaltsscheck)"
+      ),
+    )
+
