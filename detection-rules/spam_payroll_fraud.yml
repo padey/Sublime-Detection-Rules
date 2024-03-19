@@ -27,11 +27,10 @@ source: |
     // Body contains specific words which are used in frauds
     and 3 of (
       regex.icontains(body.current_thread.text,
-                        "(Bankkonto|Gehaltskonto|Bankkontoinformationen)"),
+                        "(Bankkonto|Gehaltskonto|Bankkontoinformationen|Bankdaten)"),
       regex.icontains(body.current_thread.text, 
-                        "(Zahlung|Zahltag)"),
+                        "(Zahlung|Zahltag|Lohn)"),
       regex.icontains(body.current_thread.text,
                         "(Gehalt|Gehalts|Gehaltsabrechnung|Gehaltsscheck)"
       ),
     )
-
