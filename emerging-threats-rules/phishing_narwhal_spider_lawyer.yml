@@ -1,0 +1,35 @@
+name: "Phishing: Narwhal Spider Legal Service"
+description: |
+  Narwhal Spider's emails began with a malicious PDF designed to look like an authentic invoice for legal services. The files were given legitimate-seeming names in the format: "Invoice_[number]_from_[law firm name].pdf."
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://www.darkreading.com/cyberattacks-data-breaches/hackers-posing-law-firms-phish-global-orgs-multiple-languages
+  - https://www.infopoint-security.de/bluevoyant-deckt-phishing-mit-gefaelschten-rechnungen-von-anwaltskanzleien-auf/a36854/
+source: |
+    type.inbound
+    // sender profile
+    and (
+      profile.by_sender().prevalence in ("new", "outlier")
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    and not profile.by_sender().solicited
+    type.inbound
+    and any(attachments,
+            .file_type == "pdf"
+            and regex.contains(.file_name,
+                               "^(Rechnung|Invoice)(_| | -)[0-9]*(_| | -)(von|from)(_| | -)[a-zA-Z ]*"
+            )
+    )
+attack_types:
+  - "Credential Phishing"
+tactics_and_techniques:
+  - "Social engineering"
+detection_methods:
+  - "URL analysis"
+  - "Sender analysis"
