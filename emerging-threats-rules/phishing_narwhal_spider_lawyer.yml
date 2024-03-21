@@ -10,19 +10,10 @@ references:
   - https://www.infopoint-security.de/bluevoyant-deckt-phishing-mit-gefaelschten-rechnungen-von-anwaltskanzleien-auf/a36854/
 source: |
     type.inbound
-    // sender profile
-    and (
-      profile.by_sender().prevalence in ("new", "outlier")
-      or (
-        profile.by_sender().any_messages_malicious_or_spam
-        and not profile.by_sender().any_false_positives
-      )
-    )
-    and not profile.by_sender().solicited
     and any(attachments,
             .file_type == "pdf"
             and regex.contains(.file_name,
-                               "^(Rechnung|Invoice)(_| | -)[0-9]*(_| | -)(von|from)(_| | -)[a-zA-Z ]*"
+                               "^(Rechnung|Invoice)(_| | -)[0-9]*(_| | -)(von|from)(_| | -)[a-zA-Z]*"
             )
     )
 attack_types:
