@@ -16,7 +16,7 @@ source: |
             and any(file.oletools(.).relationships,
                     .target_url.scheme == "file"
                     and regex.icontains(.target_url.path,
-                                        '\.(vbs|exe|bat)($|[^\w])'
+                                        '\.(vbs|exe|bat|js)($|[^\w])'
                     )
             )
     )
