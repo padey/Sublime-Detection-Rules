@@ -11,11 +11,19 @@ references:
 source: |
     type.inbound
     and any(body.links,
-           regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)ss(o|p)|(o|p)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
-           or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)okta|okta(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
-           or regex.icontains(.href_url.url, '/([a-zA-Z([a-zA-Z0-9]+(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)[a-zA-Z([a-zA-Z0-9]+)\.(com|co|net|us|help)/g')
-           ) 
-  
+            regex.icontains(.href_url.url,
+                            '^([^.]{1,}(-|)ss(o|p)|ss(o|p)(-|)[^.]{1,})\.(com|co|net|us|help)$'
+            )
+            or regex.icontains(.href_url.url,
+                               '^([^.]{1,}(-|)okta|okta(-|)[^.]{1,})\.(com|co|net|us|help)$'
+            )
+            or regex.icontains(.href_url.url,
+                               '^([^.]{1,}(-|)h(e|1)lp(|desk|now)|h(e|1)lp(|desk|now)(-|)[^.]{1,})\.(com|co|net|us|help)$'
+            )
+            or regex.icontains(.href_url.url,
+                               '^([^.]{1,}(-|)my|my(-|)[^.]{1,})\.(com|co|net|us|help)$'
+            )
+    ) 
 attack_types:
   - "Credential Phishing"
 tactics_and_techniques:
