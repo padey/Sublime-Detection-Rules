@@ -10,6 +10,15 @@ references:
   - https://www.silentpush.com/blog/scattered-spider
 source: |
     type.inbound
+    // sender profile
+    and (
+      profile.by_sender().prevalence in ("new", "outlier")
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    and not profile.by_sender().solicited
     and any(body.links,
             regex.icontains(.href_url.url,
                             '^([^.]{1,}(-|)ss(o|p)|ss(o|p)(-|)[^.]{1,})\.(com|co|net|us|help)$'
