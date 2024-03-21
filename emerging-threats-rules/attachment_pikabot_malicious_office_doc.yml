@@ -1,4 +1,4 @@
-name: 'Attachment: PikaBot Malicious Office Document'
+name: 'Attachment: SMB Link with executable in Office Document'
 authors:
   - twitter: "affje0x65"
 description: |
@@ -6,30 +6,21 @@ description: |
 references:
 - https://twitter.com/DTCERT/status/1758436565825487102
 - https://twitter.com/Max_Mal_/status/1758076107943718947
+- https://twitter.com/Unit42_Intel/status/1770461681145061378
 severity: "critical"
 type: "rule"
 source: |
     type.inbound
     and any(attachments,
-            (
-              (
-                // office files
-                .file_extension in~ $file_extensions_macros
-              )
-              and any(file.explode(.),
-                      // matches a ipv4
-                      any(.scan.strings.strings,
-                          regex.icontains(.,
-                                          '(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
-                          )
-                          // matches smb
-                          and regex.icontains(., 'file:\/\/')
-                      )
-              )
+            (.file_extension in~ $file_extensions_macros)
+            and any(file.oletools(.).relationships,
+                    .target_url.scheme == "file"
+                    and regex.icontains(.target_url.path,
+                                        '\.(vbs|exe|bat)($|[^\w])'
+                    )
             )
     )
 tags:
-- 'Malfam: PikaBot'
 - Attachments
 - Malware
 
