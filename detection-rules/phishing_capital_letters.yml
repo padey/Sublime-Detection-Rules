@@ -1,0 +1,22 @@
+name: "Suspicious subject in capital letters only"
+description: |
+    Mails with only capital letters in the subject line are often used by attackers for phishing in order to put pressure on the recipient..  
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    // sender profile check
+    and (
+      profile.by_sender().prevalence in ("new", "outlier")
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    and not profile.by_sender().solicited
+    // onyl capital letters (and spaces...) in subject
+    and regex.contains(subject.subject,'^[A-Z\s]+$')
