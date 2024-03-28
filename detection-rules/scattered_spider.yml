@@ -19,6 +19,13 @@ source: |
       )
     )
     and not profile.by_sender().solicited
+    // no attachments
+    and length(attachments) == 0
+    // less than 2 links 
+    and length(body.links) < 2
+    // known attack pattern regex
+    // example: sso-victom.com
+    // example: okta-victom.com
     and any(body.links,
             regex.icontains(.href_url.url,
                             '^([^.]{1,}(-|)ss(o|p)|ss(o|p)(-|)[^.]{1,})\.(com|co|net|us|help)$'
@@ -32,7 +39,7 @@ source: |
             or regex.icontains(.href_url.url,
                                '^([^.]{1,}(-|)my|my(-|)[^.]{1,})\.(com|co|net|us|help)$'
             )
-    ) 
+    )
 attack_types:
   - "Credential Phishing"
 tactics_and_techniques:
