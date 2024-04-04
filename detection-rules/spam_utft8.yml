@@ -1,6 +1,6 @@
 name: "Spam: UTF-8 string in sender/subject"
 description: |
-  The sender or subject contains a UTF-8 string that also could be a encoded base64 string to bypass mail filters.
+  The sender or subject contains a suspicious UTF-8 string that also could be a encoded base64 string to bypass mail filters.
 type: "rule"
 severity: "low"
 authors:
