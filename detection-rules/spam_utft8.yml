@@ -1,0 +1,27 @@
+name: "Spam: UFT-8 string in sender/subject"
+description: |
+  The sender or subject contains a UTF-8 string that also could be a encoded base64 string to bypass mail filters.
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Michael from Slack :)
+source: |
+    type.inbound
+    // negate highly trusted sender domains unless they fail DMARC authentication
+    and
+    (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(distinct(headers.hops, .authentication_results.dmarc is not null),
+              strings.ilike(.authentication_results.dmarc, "*fail")
+          )
+        )
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
+    // the sender or subject contains a UTF-8 string
+    and strings.contains(sender.display_name, "UTF-8")
+    or strings.contains(subject.subject,"UTF-8")
