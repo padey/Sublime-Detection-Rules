@@ -2,7 +2,7 @@ name: "Info: SPAM Mail"
 description: |
   Cisco classifies these messages as advertising messages sent by unrecognized marketing groups.
 type: "rule"
-severity: "low"
+severity: "informational"
 authors:
   - twitter: "affje0x65"
 references:
