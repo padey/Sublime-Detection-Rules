@@ -1,0 +1,22 @@
+name: "SendinBlue SMTP Relay"
+description: |
+  Detects emails sent by SendinBlue SMTP relay. The SendinBlue SMTP relay is used by attackers to automatically generate highly personalised attack / malware emails. 
+reference:
+  - "https://scribehow.com/shared/How_do_I_use_Sendinblues_SMTP_server__cvfzmoNDSMqigl1W2zdmzA"
+type: "rule"
+severity: "high"
+source: |
+  type.inbound
+  and any(headers.domains,
+          regex.icontains(.root_domain, "sendinblue.com")
+          and regex.icontains(.subdomain, "smtp-relay")
+  )
+  and (
+    profile.by_sender().prevalence in ("new")
+    or profile.by_sender().any_messages_malicious_or_spam
+  )
+attack_types:
+  - "Malware/Ransomware"
+detection_methods:
+  - "Header analysis"
+  - "Sender analysis"
