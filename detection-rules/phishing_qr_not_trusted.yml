@@ -1,4 +1,4 @@
-name: "Link: QR Code from not high trusted sender domain (first-time sender) "
+name: "Link: QR Code from not high trusted sender domain (first-time sender)"
 description: |
   This rule scans attachments and the body of the email for QR codes that contain URLs that are not highly trusted and that are from first-time senders.
 type: "rule"
