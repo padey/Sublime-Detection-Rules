@@ -1,0 +1,22 @@
+name: "Supicious German values in subject"
+description: |
+  Detects messages with suspicious / pressurising German values in the subject.
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+  type.inbound
+  and (
+    (
+      strings.ilike(subject.subject, ("*!!!*"))
+      or strings.ilike(subject.subject, ("*dringend*"))
+      or strings.ilike(subject.subject, ("*sofort*"))
+    )
+  )
+  and (
+    profile.by_sender().prevalence in ("new")
+    or profile.by_sender().any_messages_malicious_or_spam
+  )
