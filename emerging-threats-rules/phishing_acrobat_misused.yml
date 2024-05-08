@@ -8,13 +8,17 @@ references:
 severity: "critical"
 type: "rule"
 source: |
-  type.inbound
-  and any(attachments,
-          .file_extension == "png"
-  )
-  and any(body.links,
-          strings.icontains(.href_url.domain.domain, "acrobat.adobe.com")
-          and strings.icontains(.href_url.path, "/id/urn:aaid:sc:")
-  )
+    type.inbound
+    and any(attachments,
+            .file_extension == "png"
+    )
+    and any(body.links,
+            strings.icontains(.href_url.domain.domain, "acrobat.adobe.com")
+            and strings.icontains(.href_url.path, "/id/urn:aaid:sc:")
+    ) 
+    // undisclosed recipients
+    and any([recipients.to, recipients.bcc, recipients.cc],
+            any(., .display_name =~ "Undisclosed recipients")
+    )
 tags:
 - Phishing
