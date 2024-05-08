@@ -1,0 +1,20 @@
+name: 'Phishing: Acrobat Redirect misued'
+authors:
+  - twitter: "affje0x65"
+description: |
+  Attackers are currently using hacked business mailboxes to send an image with an alleged OneDrive notification. The link redirects you to acrobat.adobe.com, which ultimately redirects to phishing.
+references:
+- internal
+severity: "critical"
+type: "rule"
+source: |
+  type.inbound
+  and any(attachments,
+          .file_extension == "png"
+  )
+  and any(body.links,
+          strings.icontains(.href_url.domain.domain, "acrobat.adobe.com")
+          and strings.icontains(.href_url.path, "/id/urn:aaid:sc:")
+  )
+tags:
+- Phishing
