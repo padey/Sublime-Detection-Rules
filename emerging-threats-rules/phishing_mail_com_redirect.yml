@@ -4,19 +4,19 @@ authors:
 description: |
   Attackers are currently using hacked business mailboxes to send an image with an alleged SharePoint Storage notification. The link redirects you to c.mail.com, which ultimately redirects to phishing / or downloads a malicious pdf.
 references:
-- internal
+  - internal
 severity: "critical"
 type: "rule"
 source: |
-  type.inbound
-  and any(body.links,
-          strings.contains(.href_url.path, '/@')
-          and .href_url.domain.domain == 'c.mail.com'
-  )
-  or any(attachments, 
-         any(file.explode(.),
-             strings.icontains(.scan.ocr.raw, 'SharePoint Storage')
-         )
-  )
+    type.inbound
+    and any(body.links,
+            strings.contains(.href_url.path, '/@')
+            and .href_url.domain.domain == 'c.mail.com'
+    )
+    or any(attachments, 
+           any(file.explode(.),
+               strings.icontains(.scan.ocr.raw, 'SharePoint Storage')
+           )
+    )
 tags:
 - Phishing
