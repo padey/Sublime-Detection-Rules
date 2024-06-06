@@ -1,0 +1,51 @@
+name: "Spam: Callback phishing with strange words / expressions"
+description: |
+    A very short email text with strange words in it, such as WhatsApp, from an unknown sender with a freemail account. This pattern is often the first step in social engineering. 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    // if freemail, flag if it's a first-time sender
+    and (
+      (
+        sender.email.domain.root_domain in $free_email_providers
+        and sender.email.email not in $sender_emails
+      )
+    )
+    // only 1 recipient in to or cc
+    and (
+      (length(recipients.to) == 1 and length(recipients.cc) == 0)
+      or (length(recipients.to) == 0 and length(recipients.cc) == 1)
+    )
+    and 
+    // callback whatsapp/etc scam
+    (
+      strings.ilike(body.current_thread.text,
+                    "*whatsapp*",
+                    "*telegram*",
+                    "*signal*",
+                    "*imessage*",
+                    "*number*",
+                    "*nummer*",
+                    "*büro*",
+                    "*office*",
+                    "*phone*",
+                    "*handy*"
+      )
+      // sent from a ios device
+      or regex.contains(body.plain.raw,
+                        '(Von meinem iPhone gesendet|Sent from my iPhone|Von meinem iPad gesendet|Sent from my iPad)'
+      )
+      or regex.contains(body.plain.raw, '(!|\?)')
+      or regex.contains(subject.subject, '(!|\?)')
+    )
+    // no links
+    and length(body.links) == 0
+    // no attachments
+    and length(attachments) == 0
+    // body is short
+    and length(body.current_thread.text) < 400
