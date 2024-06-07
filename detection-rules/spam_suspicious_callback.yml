@@ -33,6 +33,9 @@ source: |
                     "*nummer*",
                     "*büro*",
                     "*office*",
+                    "*mobile*",
+                    "*wechat*",
+                    "*skype*",
                     "*phone*",
                     "*handy*"
       )
