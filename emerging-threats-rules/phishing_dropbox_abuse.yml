@@ -14,3 +14,4 @@ source: |
       strings.contains(subject.subject, 'Neue Dropbox')
       or strings.contains(subject.subject, 'New Dropbox')
     )
+    and strings.contains(subject.subject, '.pdf')
