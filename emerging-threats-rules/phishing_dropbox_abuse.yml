@@ -1,0 +1,16 @@
+name: 'Phishing: Dropbox abuse with phishing PDF files'
+authors:
+  - twitter: "affje0x65"
+description: |
+ Hacked Dropbox accounts are currently being used to send PDF files containing a phishing link. However, the PDF can only be accessed if you log in with a Dropbox account. This rule is tricky ;)
+references:
+- Internal Samples
+severity: "critical"
+type: "rule"
+source: |
+    type.inbound
+    and sender.email.domain.domain == 'dropbox.com'
+    and (
+      strings.contains(subject.subject, 'Neue Dropbox')
+      or strings.contains(subject.subject, 'New Dropbox')
+    )
