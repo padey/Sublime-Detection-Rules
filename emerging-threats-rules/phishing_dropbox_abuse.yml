@@ -11,9 +11,9 @@ source: |
     type.inbound
     and sender.email.domain.domain == 'dropbox.com'
     and (
-      strings.contains(subject.subject, 'Neue Dropbox')
-      or strings.contains(subject.subject, 'New Dropbox')
-      or strings.contains(body.plain.raw, "PO")
+      (
+        strings.contains(subject.subject, 'mit Ihnen geteilt')
+        or strings.contains(subject.subject, 'with you')
+      )
+      and strings.contains(subject.subject, "pdf")
     )
-    and strings.contains(subject.subject, '.pdf')
-    
