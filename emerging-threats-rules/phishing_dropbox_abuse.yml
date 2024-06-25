@@ -13,5 +13,7 @@ source: |
     and (
       strings.contains(subject.subject, 'Neue Dropbox')
       or strings.contains(subject.subject, 'New Dropbox')
+      or strings.contains(body.plain.raw, "PO")
     )
     and strings.contains(subject.subject, '.pdf')
+    
