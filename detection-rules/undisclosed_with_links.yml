@@ -2,6 +2,8 @@ name: "Phishing: All recipients undisclosed with short body and link"
 description: All recipients are undisclosed, with links and a short body and subject from an unknown sender. This combination of indicators has recently been used for phishing.
 type: "rule"
 severity: "high"
+authors:
+  - twitter: "affje0x65"
 source: |
     type.inbound
     and profile.by_sender().prevalence in ("new")
