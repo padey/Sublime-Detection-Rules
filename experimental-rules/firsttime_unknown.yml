@@ -9,8 +9,18 @@ references:
   - Experimental
 source: |
     type.inbound
-    and profile.by_sender().prevalence in ("new")
+    and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
     and beta.attack_score() .verdict in ("suspicious", "unknown")
+    // combination of two attack_score are usable in a newer version of Sublime// and (//    beta.attack_score() .verdict in ("suspicious", "unknown")//    and beta.attack_score() .score > 50// )
     // combination of two attack_score are usable in a newer version of Sublime
     //and (
     //    beta.attack_score() .verdict in ("suspicious", "unknown")
