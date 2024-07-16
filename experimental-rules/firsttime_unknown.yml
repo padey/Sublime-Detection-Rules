@@ -1,6 +1,6 @@
-name: "Experimental: First time sender with 'unknown' attack score"
+name: "Experimental: First time sender with high attack score"
 description: |
-  Detects only first time sender with a 'unknown' attack score, this might be a good mail to verify in a malware sandbox.
+  Detects only first-time senders with a 'suspicious' or 'unknown' attack score verdict with a high attack score, this might be a good mail to check in a malware sandbox.
 type: "rule"
 severity: "low"
 authors:
@@ -8,10 +8,12 @@ authors:
 references:
   - Experimental
 source: |
-      type.inbound
-        profile.by_sender().prevalence in ("new")
-        #Placeholder
-        and attack_score == 'unknown'
+    type.inbound
+    and profile.by_sender().prevalence in ("new")
+    and (
+        beta.attack_score() .verdict in ("suspicious", "unknown")
+        and beta.attack_score() .score > 50
+    )
 detection_methods:
   - "Attack Score"
   - "Sender Analysis"
