@@ -20,7 +20,6 @@ source: |
       )
     )
     and beta.attack_score() .verdict in ("suspicious")
-    // combination of two attack_score are usable in a newer version of Sublime// and (//    beta.attack_score() .verdict in ("suspicious", "unknown")//    and beta.attack_score() .score > 50// )
     // combination of two attack_score are usable in a newer version of Sublime
     //and (
     //    beta.attack_score() .verdict in ("suspicious", "unknown")
