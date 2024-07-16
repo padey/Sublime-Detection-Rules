@@ -1,4 +1,4 @@
-name: "Experimental: First time sender with high attack score"
+name: "Experimental: First time sender with unknown/suspicious attack score"
 description: |
   Detects only first-time senders with a 'suspicious' or 'unknown' attack score verdict with a high attack score, this might be a good mail to check in a malware sandbox.
 type: "rule"
