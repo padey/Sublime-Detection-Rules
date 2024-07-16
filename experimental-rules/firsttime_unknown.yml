@@ -10,10 +10,12 @@ references:
 source: |
     type.inbound
     and profile.by_sender().prevalence in ("new")
-    and (
-        beta.attack_score() .verdict in ("suspicious", "unknown")
-        and beta.attack_score() .score > 50
-    )
+    and beta.attack_score() .verdict in ("suspicious", "unknown")
+    // combination of two attack_score are usable in a newer version of Sublime
+    //and (
+    //    beta.attack_score() .verdict in ("suspicious", "unknown")
+    //    and beta.attack_score() .score > 50
+    //)
 detection_methods:
   - "Attack Score"
   - "Sender Analysis"
