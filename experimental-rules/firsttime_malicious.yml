@@ -1,0 +1,16 @@
+name: "Experimental: First time sender with malicious attack score"
+description: |
+  Detects only first-time senders where the email is rated as malicious, which is a good indicator of unwanted or malicious email.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Experimental
+source: |
+    type.inbound
+    and profile.by_sender().prevalence in ("new")
+    and beta.attack_score() .verdict in ("malicious")
+detection_methods:
+  - "Attack Score"
+  - "Sender Analysis"
