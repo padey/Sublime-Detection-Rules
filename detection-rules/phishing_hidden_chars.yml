@@ -1,0 +1,26 @@
+name: "Phishing: Hidden characters in subject with links containing base64"
+description: |
+  Phishing e-mail that uses hidden characters in the subject line to bypass spam filters. In addition, the recipient's e-mail address is included in the link as a phishing link.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    and (
+      // search for invisile character
+      // Example: N‌‌e​‎w D‏‍o​c​​u​‌m​​e‍​n‏​t 7‍‎0​‌4‍2‍‌9‎‌3​‎4‍​3‏‌3‌‌7-[R​‎I-0‌‏7‎6-8‎‏3‍​8‏‍8-P‎​A‌​Y]
+      strings.contains(subject.subject, "‏")
+      or strings.contains(subject.subject, "‎")
+    )
+    and any(body.links,
+            .href_url.domain.domain == "track.webgains.com"
+            and (
+              // we found base64 encoded recipent mails in the query_params, but only ending with one =
+              strings.ends_with(.href_url.query_params, '=')
+              // will find anything.
+              or strings.contains(.href_url.query_params, 'http')
+            )
+    )
