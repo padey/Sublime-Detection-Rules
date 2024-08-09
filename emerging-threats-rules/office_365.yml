@@ -10,13 +10,22 @@ type: "rule"
 source: |
     type.inbound
     and any(file.explode(beta.message_screenshot()),
-            strings.ilike(.scan.ocr.raw, "*Microsoft Office 365*", "*Microsoft 365*", "*Office 365*", "*Internal Planner*")
+            strings.ilike(.scan.ocr.raw,
+                          "*Microsoft Office 365*",
+                          "*Microsoft 365*",
+                          "*Office 365*",
+                          "*Internal Planner*",
+                          "*You have been assigned to a new team*"
+            )
     )
     and (
       strings.contains(body.current_thread.text, "Microsoft Office 365")
       or strings.contains(body.current_thread.text, "Microsoft 365")
       or strings.contains(body.current_thread.text, "Office 365")
       or strings.contains(body.current_thread.text, "Internal Planner")
+      or strings.contains(body.current_thread.text,
+                          "You have been assigned to a new team"
+      )
     )
     and any(body.links,
             .href_url.domain.root_domain not in $tranco_1m
