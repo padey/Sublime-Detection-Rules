@@ -1,0 +1,51 @@
+name: "Phishing: Impersonates Microsoft / Office 365 and uses non trusted Links" 
+authors:
+  - twitter: "affje0x65"
+description: |
+  Impersonates Microsoft / Office 365 and uses non trusted Links, mostly a phishing framework is used for this mails. 
+references:
+  - internal
+severity: "critical"
+type: "rule"
+source: |
+    type.inbound
+    and any(file.explode(beta.message_screenshot()),
+            strings.ilike(.scan.ocr.raw, "*Microsoft Office 365*", "*Microsoft 365*", "*Office 365*", "*Internal Planner*")
+    )
+    and (
+      strings.contains(body.current_thread.text, "Microsoft Office 365")
+      or strings.contains(body.current_thread.text, "Microsoft 365")
+      or strings.contains(body.current_thread.text, "Office 365")
+      or strings.contains(body.current_thread.text, "Internal Planner")
+    )
+    and any(body.links,
+            .href_url.domain.root_domain not in $tranco_1m
+            or (
+              // free subdomain URL
+              .href_url.domain.subdomain is not null
+              and .href_url.domain.subdomain != "www"
+              and .href_url.domain.root_domain in $free_subdomain_hosts
+            )
+    )
+    and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    // negate highly trusted sender domains unless they fail DMARC authentication
+    and (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(distinct(headers.hops, .authentication_results.dmarc is not null),
+              strings.ilike(.authentication_results.dmarc, "*fail")
+          )
+        )
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
