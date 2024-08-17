@@ -1,4 +1,4 @@
-name: "Phishing: Impersonates Microsoft / Office 365 and uses non trusted Links" 
+name: "Attachment: Abused UDL file potentially used for phishing" 
 authors:
   - twitter: "affje0x65"
 description: |
