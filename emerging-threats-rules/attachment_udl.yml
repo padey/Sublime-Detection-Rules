@@ -5,6 +5,7 @@ description: |
   This rule finds emails with .UDL files attached. This phishing tactic is to use a .UDL file that steals the user's NetNTLMv2 hash or username and password. 
 references:
   - https://trustedsec.com/blog/oops-i-udld-it-again
+  - https://x.com/TrustedSec/status/1824146576060637365
   - https://learn.microsoft.com/en-us/sql/connect/oledb/help-topics/data-link-pages?view=sql-server-ver16
 severity: "high"
 type: "rule"
