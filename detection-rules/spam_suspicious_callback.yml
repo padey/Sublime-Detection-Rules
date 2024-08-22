@@ -8,53 +8,56 @@ authors:
 references:
   - Internal Research
 source: |
-        type.inbound
-        // if freemail, flag if it's a first-time sender
-        and (
-          (
-            sender.email.domain.root_domain in $free_email_providers
-            and sender.email.email not in $sender_emails
-          )
-        )
-        // only 1 recipient in to or cc
-        and (
-          (length(recipients.to) == 1 and length(recipients.cc) == 0)
-          or (length(recipients.to) == 0 and length(recipients.cc) == 1)
-        )
-        and 
-        // callback whatsapp/etc scam
-        (
-          strings.ilike(body.plain.raw,
-                        "*whatsapp*",
-                        "*telegram*",
-                        "*signal*",
-                        "*imessage*",
-                        "*number*",
-                        "*nummer*",
-                        "*büro*",
-                        "*office*",
-                        "*mobile*",
-                        "*wechat*",
-                        "*skype*",
-                        "*phone*",
-                        "*handy*",
-                        "*apple*",
-                        "*gutschein*",
-                        "*kaufen*"
-          )
-          // sent from a ios device
-          or regex.contains(body.plain.raw,
-                            '(Von meinem iPhone gesendet|Sent from my iPhone|Von meinem iPad gesendet|Sent from my iPad)'
-          )
-          or regex.contains(body.plain.raw, '(!|\?)')
-          or regex.contains(subject.subject, '(!|\?)')
-          or regex.icontains(subject.subject, '(RE:|AW:|WG:|FWD:)')
-        )
-        
-        // no attachments
-        and (
-          length(attachments) == 0
-          or any(attachments, .file_type in ('png', 'jpeg', 'jpg', 'bmp'))
-        )
-        // body is short
-        and length(body.current_thread.text) < 400
+    type.inbound
+    // if freemail, flag if it's a first-time sender
+    and (
+      (
+        sender.email.domain.root_domain in $free_email_providers
+        and sender.email.email not in $sender_emails
+      )
+    )
+    // only 1 recipient in to or cc
+    and (
+      (length(recipients.to) == 1 and length(recipients.cc) == 0)
+      or (length(recipients.to) == 0 and length(recipients.cc) == 1)
+    )
+    and 
+    // callback whatsapp/etc scam
+    (
+      strings.ilike(body.plain.raw,
+                    "*whatsapp*",
+                    "*telegram*",
+                    "*signal*",
+                    "*imessage*",
+                    "*number*",
+                    "*nummer*",
+                    "*büro*",
+                    "*office*",
+                    "*mobile*",
+                    "*wechat*",
+                    "*skype*",
+                    "*phone*",
+                    "*handy*",
+                    "*apple*",
+                    "*gutschein*",
+                    "*kaufen*"
+      )
+      // sent from a ios device
+      or regex.contains(body.plain.raw,
+                        '(Von meinem iPhone gesendet|Sent from my iPhone|Von meinem iPad gesendet|Sent from my iPad)'
+      )
+      or regex.contains(body.plain.raw, '(!|\?)')
+      or regex.contains(subject.subject, '(!|\?)')
+      or regex.icontains(subject.subject, '(RE:|AW:|WG:|FWD:)')
+    )
+    
+    // no attachments
+    and (
+      length(attachments) == 0
+      or any(attachments,
+             .file_extension in ('png', 'jpg', 'jpeg', 'bmp')
+             and length(attachments) == 1
+      )
+    )
+    // body is short
+    and length(body.current_thread.text) < 400
