@@ -1,0 +1,48 @@
+name: "Phishing: Fake message that the recipients domain has expired"
+description: |
+  Recognises messages that pretend your domain has expired. The links usually contain phishing or credit card theft.
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound
+    and (
+      // keyword domain and .... verlängerung, expired, abgelaufen, etc pp
+      // Body contains specific words which are used in frauds
+      2 of (
+        regex.icontains(body.current_thread.text, "(domain|domainname|domäne)"),
+        regex.icontains(body.current_thread.text,
+                        "(abgelaufen|gesperrt|vеrlängеrung|gelöscht|erneuert|expired|blocked|deleted|renew|renewal)"
+        ),
+      )
+      // domain of the reciptients is in the body current text
+      and any(recipients.to,
+              strings.icontains(body.current_thread.text, .email.domain.domain)
+      )
+    )
+    // negate highly trusted sender domains unless they fail DMARC authentication
+    and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    and (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(distinct(headers.hops, .authentication_results.dmarc is not null),
+              strings.ilike(.authentication_results.dmarc, "*fail")
+          )
+        )
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
+    and not strings.contains(sender.email.email, 'postmaster@')
