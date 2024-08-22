@@ -1,0 +1,53 @@
+name: "Suspicious Words - Possible Callback Phishing Mail"
+description: |
+  This rule detects emails containing suspicious words and phrases commonly used in callback phishing attempts 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound
+    // if freemail or malicious sender
+    and (
+      (sender.email.domain.root_domain in $free_email_providers)
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    // only 1 recipient in to or cc
+    and (
+      (length(recipients.to) == 1 and length(recipients.cc) == 0)
+      or (length(recipients.to) == 0 and length(recipients.cc) == 1)
+    )
+    and (length(attachments) == 0)
+    // Short Current Thread with unter 400 characters
+    and length(body.current_thread.text) < 400
+    // No link in body, or link is not in tranco 1mio
+    and (
+      length(body.links) == 0
+      or any(body.links,
+             .href_url.domain.root_domain not in $tranco_1m
+             or (
+               // free subdomain URL
+               .href_url.domain.subdomain is not null
+               and .href_url.domain.subdomain != "www"
+               and .href_url.domain.root_domain in $free_subdomain_hosts
+             )
+      )
+    )
+    // Suspicious (German) words
+    and (
+      (
+        strings.ilike(body.plain.raw, ("*whatsapp*"))
+        or strings.ilike(body.plain.raw, ("*apple*"))
+        or strings.ilike(body.plain.raw, ("*Geschenkkarten*"))
+        or strings.ilike(body.plain.raw, ("*Rubblecodes*"))
+        or strings.ilike(body.plain.raw, ("*wann sie können*"))
+        or strings.ilike(body.plain.raw, ("*wirklich dringend*"))
+        or strings.ilike(body.plain.raw, ("*sehr dringend*"))
+        or strings.ilike(body.plain.raw, ("*hilfe*"))
+      )
+    )
