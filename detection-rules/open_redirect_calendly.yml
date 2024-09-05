@@ -1,4 +1,4 @@
-name: "Open Redirect: artkaderne"
+name: "Open Redirect: calendly"
 description: |
   Message contains use of an open redirect on calendly.com. This has been exploited in the wild.
 type: "rule"
