@@ -1,0 +1,38 @@
+name: "Link: WeTransfer link from freemail"
+description: |
+  WeTransfer can be misused to send phishing PDFs. This rule finds all WeTransfer mails that were not sent by WeTransfer, which is a sign of phishing.
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound
+    and any(body.links,
+        .href_url.domain.root_domain == "wetransfer.com"
+    )
+    and sender.email.domain.root_domain != 'wetransfer.com'
+    and (
+      not profile.by_sender().solicited
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+    )
+    
+    // negate highly trusted sender domains unless they fail DMARC authentication
+    and (
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and not headers.auth_summary.dmarc.pass
+      )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
+    // if freemail, flag if it's a first-time sender
+    and (
+      (
+        sender.email.domain.root_domain in $free_email_providers
+        and sender.email.email not in $sender_emails
+      )
+    )
