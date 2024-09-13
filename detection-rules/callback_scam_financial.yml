@@ -1,0 +1,45 @@
+
+name: "Spam: Financiol Callback phishing with strange words / expressions"
+description: |
+    An email with strange words that are often used in financial fraud. The sender is unknown with a freemail account. This pattern is often the first step in social engineering. 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    // if freemail, flag if it's a first-time sender
+    and (
+      (
+        sender.email.domain.root_domain in $free_email_providers
+        and sender.email.email not in $sender_emails
+      )
+    )
+    // only 1 recipient in to or cc
+    and (
+      (length(recipients.to) == 1 and length(recipients.cc) == 0)
+      or (length(recipients.to) == 0 and length(recipients.cc) == 1)
+    )
+    and 
+    // callback whatsapp/etc scam
+    (
+      strings.ilike(body.plain.raw,
+                    "*mein name ist*",
+                    "*verstorben*",
+                    "*dollar*",
+                    "*verspreche*",
+                    "*direktor*",
+                    "*bank*",
+                    "*überweisen*",
+                    "*wahrheit*",
+                    "*ehrlich*"
+      )
+      // sent from a ios device
+    // no attachments
+    and (
+      length(attachments) == 0
+      or any(attachments, .file_type in ('png', 'jpeg', 'jpg', 'bmp'))
+    )
+    )
