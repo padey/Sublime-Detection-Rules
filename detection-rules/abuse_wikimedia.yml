@@ -1,0 +1,19 @@
+name: "Phishing: Imitates Microsoft/Google uses Wikiemedia logos"
+description: |
+  Imitates Microsoft/Google and inserts logos from Wikimedia into the body. Currently used for attacks. 
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound
+    and profile.by_sender().prevalence in ("new")
+    and any(body.links,
+            .href_url.domain.root_domain == "wikimedia.org"
+            and (strings.ends_with(.href_url.path, ".svg")
+            or strings.ends_with(.href_url.path, ".png")
+            or strings.ends_with(.href_url.path, ".jgp"))
+    )
+    and any(ml.nlu_classifier(body.current_thread.text).entities, .name == "org")
