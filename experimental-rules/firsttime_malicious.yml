@@ -10,7 +10,7 @@ references:
 source: |
     type.inbound
     and profile.by_sender().prevalence in ("new")
-    and beta.attack_score() .verdict in ("malicious")
+    and beta.attack_score().verdict == "malicious"
 detection_methods:
   - "Attack Score"
   - "Sender Analysis"
