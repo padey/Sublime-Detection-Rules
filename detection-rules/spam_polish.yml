@@ -2,26 +2,26 @@ name: "Spam: Festive Polish Spam"
 description: |
   Spam emails that are currently circulating a lot. Polish requests for gifts, vouchers, etc. - The text always has the same structure. My recommendation: direct trash. 
 type: "rule"
-severity: "info"
+severity: "low"
 authors:
   - twitter: "affje0x65"
 references:
   - internal
 source: |
-    type.inbound
-    and (
-      profile.by_sender().prevalence in ("new", "outlier", "rare")
-      and not profile.by_sender().solicited
-    )
-    and sender.email.domain.tld == "pl"
-    and not strings.icontains(sender.display_name, "biuro")
-    and (
-      (
-        strings.icontains(body.plain.raw, "Dzień dobry")
-        or strings.icontains(body.plain.raw, "Dzien dobry")
+      type.inbound
+      and (
+        profile.by_sender().prevalence in ("new", "outlier", "rare")
+        and not profile.by_sender().solicited
       )
-      or (
-        strings.icontains(body.html.raw, "Dzien dobry")
-        or strings.icontains(body.html.raw, "Dzień dobry")
+      and sender.email.domain.tld == "pl"
+      and not strings.icontains(sender.display_name, "biuro")
+      and (
+        (
+          strings.icontains(body.plain.raw, "Dzień dobry")
+          or strings.icontains(body.plain.raw, "Dzien dobry")
+        )
+        or (
+          strings.icontains(body.html.raw, "Dzien dobry")
+          or strings.icontains(body.html.raw, "Dzień dobry")
+        )
       )
-    )
