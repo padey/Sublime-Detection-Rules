@@ -5,6 +5,7 @@ description: |
  Obfuscated / base64 encoded code hidden in SVG file. Downloads a HTML file which calls a smb share to execute a vbs file.
 references:
 - internal
+- https://www.virustotal.com/gui/file/1bbc33b56305408b3cd8d4f8e02c71298c8e8427f471fc50b4f024a701882836/detection
 severity: "critical"
 type: "rule"
 source: |
