@@ -1,0 +1,28 @@
+name: 'Emerging Threat - Attachment: SVG attachment with obfuscated code'
+authors:
+  - twitter: "affje0x65"
+description: |
+ Obfuscated / base64 encoded code hidden in SVG file. Downloads a HTML file which calls a smb share to execute a vbs file.
+references:
+- internal
+severity: "critical"
+type: "rule"
+source: |
+  type.inbound
+  and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (
+        profile.by_sender().any_messages_malicious_or_spam
+        and not profile.by_sender().any_false_positives
+      )
+  )
+  and any(attachments,
+          (.file_extension == "svg") 
+          and .content_type == "application/octet-stream"
+  )
+tags:
+- Attachments
+- Malware
