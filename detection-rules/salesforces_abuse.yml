@@ -60,7 +60,10 @@ source: |
         "Dringend",
         "Sofort",
         "Konto",
-        "Deaktivierung"
+        "Deaktivierung",
+        "warning",
+        "important",
+        "critical",
         ),
         any($suspicious_subjects, strings.icontains(subject.subject, .))
       )
