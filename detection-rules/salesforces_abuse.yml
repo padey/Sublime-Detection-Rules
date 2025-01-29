@@ -7,66 +7,14 @@ authors:
 references:
   - Internal Research
 source: |
-      type.inbound
-      and (
-        sender.email.email != headers.return_path.email
-        and sender.email.domain.domain == "salesforce.com"
-      )
-      and length(attachments) == 0
-      and length(filter(body.links,
-                        .href_url.domain.domain not in $org_domains
-                        and .href_url.domain.root_domain not in (
-                          "salesforce.com",
-                          "force.com",
-                          "site.com"
-                        )
-                 )
-      ) > 0
-      and (
-        (
-          sender.email.domain.domain == "salesforce.com"
-          and any(headers.hops,
-                  any(.fields,
-                      .name == "X-SFDC-EmailCategory"
-                      and .value in ("apiMassMail", "networksNewUser")
-                  )
-          )
-        )
-        or (
-          (
-            (
-              profile.by_sender().prevalence in ("new", "outlier")
-              and not profile.by_sender().solicited
-            )
-            or (
-              profile.by_sender().any_messages_malicious_or_spam
-              and not profile.by_sender().any_false_positives
-            )
-          )
-          and (
-            (
-              sender.email.domain.root_domain in $high_trust_sender_root_domains
-              and not headers.auth_summary.dmarc.pass
-            )
-            or sender.email.domain.root_domain not in $high_trust_sender_root_domains
-          )
-        )
-      )
-      and 1 of (
-        regex.icontains(subject.subject, 
-        "Warnung", 
-        "Wichtig", 
-        "Kritisch",
-        "Dringend",
-        "Sofort",
-        "Konto",
-        "Deaktivierung",
-        "warning",
-        "important",
-        "critical",
-        ),
-        any($suspicious_subjects, strings.icontains(subject.subject, .))
-      )
+    type.inbound
+    and (
+      sender.email.email != headers.return_path.email
+      and sender.email.domain.domain == "salesforce.com"
+    )
+    and not strings.icontains(headers.return_path.domain.domain, "salesforce.com")
+    and not strings.icontains(headers.return_path.domain.subdomain, "calendar-server.bounces")      
+    
 attack_types:
   - "Credential Phishing"
 tactics_and_techniques:
