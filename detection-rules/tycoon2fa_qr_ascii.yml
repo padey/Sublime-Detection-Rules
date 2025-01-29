@@ -1,0 +1,57 @@
+name: "Phishing: ASCII QR Code Phishing"
+description: |
+  ASCII Chars used for QR Code Phishing, used by Tycoon2FA PaaS.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+source: |
+    type.inbound
+    // QR Code with ASCII signs, letter-spacing 0 for display.
+    and (
+      strings.icontains(body.html.raw, '<pre style="letter-spacing:0"')
+      or strings.icontains(body.html.raw, 'letter-spacing:0')
+      and (
+            strings.contains(body.html.raw, "▀")  
+            or strings.icontains(body.html.raw, "▁")
+            or strings.icontains(body.html.raw, "▂")
+            or strings.icontains(body.html.raw, "▃")
+            or strings.icontains(body.html.raw, "▄")
+            or strings.icontains(body.html.raw, "▅")
+            or strings.icontains(body.html.raw, "▆")
+            or strings.icontains(body.html.raw, "▇")
+            or strings.icontains(body.html.raw, "█")
+            or strings.icontains(body.html.raw, "▉")
+            or strings.icontains(body.html.raw, "▊")
+            or strings.icontains(body.html.raw, "▋")
+            or strings.icontains(body.html.raw, "▌")
+            or strings.icontains(body.html.raw, "▍")
+            or strings.icontains(body.html.raw, "▎")
+            or strings.icontains(body.html.raw, "▏")
+            or strings.icontains(body.html.raw, "▐")
+            or strings.icontains(body.html.raw, "░")
+            or strings.icontains(body.html.raw, "▒")
+            or strings.icontains(body.html.raw, "▓")
+            or strings.icontains(body.html.raw, "▔")
+            or strings.icontains(body.html.raw, "▕")
+            or strings.icontains(body.html.raw, "▖")
+            or strings.icontains(body.html.raw, "▗")
+            or strings.icontains(body.html.raw, "▘")
+            or strings.icontains(body.html.raw, "▙")
+            or strings.icontains(body.html.raw, "▚")
+            or strings.icontains(body.html.raw, "▛")
+            or strings.icontains(body.html.raw, "▜")
+            or strings.icontains(body.html.raw, "▝")
+            or strings.icontains(body.html.raw, "▞")
+            or strings.icontains(body.html.raw, "▟")
+        )
+    )
+    and (
+        profile.by_sender().prevalence in ("new", "outlier")
+        or (
+            profile.by_sender().any_messages_malicious_or_spam
+            and not profile.by_sender().any_false_positives
+            )
+    )
