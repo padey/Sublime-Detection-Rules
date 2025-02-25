@@ -1,0 +1,27 @@
+name: "Phishing: PayPal Feature Abused"
+description: |
+  An ongoing PayPal email scam is exploiting the platform's address settings to send fake purchase notifications that trick users into granting remote access to scammers. These notifications are sent from the legitimate service@paypal.com address.
+type: "rule"
+severity: "high"
+authors:
+  - twitter: "affje0x65"
+references:
+  - internal
+  - https://www.bleepingcomputer.com/news/security/beware-paypal-new-address-feature-abused-to-send-phishing-emails/
+source: |
+    type.inbound
+    and sender.email.email == "service@paypal.com"
+    and 
+    // exclude emails to support aliases
+    not any([recipients.to], any(., .email.email in $org_domains))
+    and (
+      (
+        strings.icontains(body.current_thread.text, "iPhone")
+        or strings.icontains(body.current_thread.text, "ipad")        
+        or strings.icontains(body.current_thread.text, "macbook")
+        or strings.icontains(body.current_thread.text, "added new address")
+        or strings.icontains(body.current_thread.text, "purchase")
+        or strings.icontains(body.current_thread.text, "unusual")
+      )
+      and (strings.icontains(body.current_thread.text, "(888)"))
+    )
