@@ -10,10 +10,12 @@ references:
   - https://www.bleepingcomputer.com/news/security/beware-paypal-new-address-feature-abused-to-send-phishing-emails/
 source: |
     type.inbound
+    // legitimate paypal service mail
     and sender.email.email == "service@paypal.com"
     and 
-    // exclude emails to support aliases
+    // exclude emails to org_domains
     not any([recipients.to], any(., .email.email in $org_domains))
+    // common phrases / words used in theses scams
     and (
       (
         strings.icontains(body.current_thread.text, "iPhone")
