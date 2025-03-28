@@ -1,0 +1,20 @@
+name: "OAuth Phishing Microsoft Online" 
+authors:
+  - twitter: "affje0x65"
+description: |
+  I am currently observing a phishing campaign that abuses the official login.microsoftonline.com URL with a redirect to a malicious website after login.
+references:
+  - internal
+severity: "high"
+type: "rule"
+source: |
+    type.inbound
+    and sender.display_name == "no-reply@sharepointonline.com"
+    and any(body.links,
+            .href_url.domain.domain == "login.microsoftonline.com"
+            and (regex.icontains(.href_url.query_params,
+                                "response_type=code&redirect_uri=https?://"
+            ) or regex.icontains(.href_url.query_params,
+                                "&redirect_uri=https?://")
+            )
+    )
