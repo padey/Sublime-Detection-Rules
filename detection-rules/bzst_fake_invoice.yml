@@ -1,0 +1,22 @@
+name: "Callback Phishing: BZST branded invoice"
+description: "This rule scans for a QR code in the pdf attachment for a bank:// link to create a SEPA payment. At the moment the Bundeszentralamt für Steuern (BZSt) is being abused to send fake tax invoices".
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+source: |
+    type.inbound
+    and any(attachments,
+            (.file_type in $file_types_images or .file_type == "pdf")
+            and any(file.explode(.),
+                    (
+                      regex.icontains(coalesce(.scan.qr.url.rewrite.original,
+                                               .scan.qr.url.url
+                                      ),
+                                      'bank://'
+                      )
+                    )
+                    and all(.scan.url.urls, .domain.domain == "bzst.bund.de")
+                    or all(.scan.url.urls, .domain.domain == "bzst.de")
+            )
+    )
