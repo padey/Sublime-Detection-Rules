@@ -6,6 +6,7 @@ authors:
   - twitter: "affje0x65"
 source: |
     type.inbound
+    and sender.email.domain.domain == "bzst-zahlung.de"
     and any(attachments,
             (.file_type in $file_types_images or .file_type == "pdf")
             and any(file.explode(.),
