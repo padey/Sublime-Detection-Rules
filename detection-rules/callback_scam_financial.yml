@@ -1,5 +1,5 @@
 
-name: "Spam: Financiol Callback phishing with strange words / expressions"
+name: "Spam: Financial Callback phishing with strange words / expressions"
 description: |
     An email with strange words that are often used in financial fraud. The sender is unknown with a freemail account. This pattern is often the first step in social engineering. 
 type: "rule"
