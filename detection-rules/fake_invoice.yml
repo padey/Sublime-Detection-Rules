@@ -1,12 +1,14 @@
-name: "Callback Phishing: BZST branded invoice"
-description: "This rule scans for a QR code in the pdf attachment for a bank:// link to create a SEPA payment. At the moment the Bundeszentralamt für Steuern (BZSt) is being abused to send fake tax invoices"
+name: "Callback Phishing: Fake Invoice"
+description: "This rule scans for a QR code in the pdf attachment for a bank:// link to create a SEPA payment. This is currently used in Phishing Attacks in Germany"
 type: "rule"
 severity: "high"
 authors:
   - twitter: "affje0x65"
 source: |
     type.inbound
-    and strings.ilike(sender.email.domain.domain, '*bzst*')
+    and (strings.ilike(sender.email.domain.domain, '*bzst*')
+    or strings.ilike(sender.email.domain.domain, '*bgn*')
+    )
     and any(attachments,
             (.file_type in $file_types_images or .file_type == "pdf")
             and any(file.explode(.),
@@ -19,5 +21,7 @@ source: |
                     )
                     and all(.scan.url.urls, .domain.domain == "bzst.bund.de")
                     or all(.scan.url.urls, .domain.domain == "bzst.de")
+                    or all(.scan.url.urls, .domain.domain == "bgn.de")
+
             )
     )
