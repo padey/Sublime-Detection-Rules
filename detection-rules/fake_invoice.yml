@@ -8,6 +8,7 @@ source: |
     type.inbound
     and (strings.ilike(sender.email.domain.domain, '*bzst*')
     or strings.ilike(sender.email.domain.domain, '*bgn*')
+    or strings.ilike(sender.email.domain.domain, '*eos*')
     )
     and any(attachments,
             (.file_type in $file_types_images or .file_type == "pdf")
@@ -22,6 +23,6 @@ source: |
                     and all(.scan.url.urls, .domain.domain == "bzst.bund.de")
                     or all(.scan.url.urls, .domain.domain == "bzst.de")
                     or all(.scan.url.urls, .domain.domain == "bgn.de")
-
+                    or all(.scan.url.urls, .domain.domain == "eos")
             )
     )
