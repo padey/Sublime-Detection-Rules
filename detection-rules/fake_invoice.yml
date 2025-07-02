@@ -6,23 +6,23 @@ authors:
   - twitter: "affje0x65"
 source: |
     type.inbound
-    and (strings.ilike(sender.email.domain.domain, '*bzst*')
-    or strings.ilike(sender.email.domain.domain, '*bgn*')
-    or strings.ilike(sender.email.domain.domain, '*eos*')
+    and (
+      (
+        profile.by_sender().prevalence in ("new", "outlier")
+        and not profile.by_sender().solicited
+      )
+      or (profile.by_sender().any_messages_malicious_or_spam)
     )
     and any(attachments,
-            (.file_type in $file_types_images or .file_type == "pdf")
+            .file_extension == "pdf"
             and any(file.explode(.),
-                    (
-                      regex.icontains(coalesce(.scan.qr.url.rewrite.original,
-                                               .scan.qr.url.url
-                                      ),
-                                      'bank://'
-                      )
+                    (strings.icontains(.scan.exiftool.producer, "iText"))
+            )
+            and any(file.explode(.),
+                    any(.scan.strings.strings,
+                        strings.ilike(., "*Girocode*")
                     )
-                    and all(.scan.url.urls, .domain.domain == "bzst.bund.de")
-                    or all(.scan.url.urls, .domain.domain == "bzst.de")
-                    or all(.scan.url.urls, .domain.domain == "bgn.de")
-                    or all(.scan.url.urls, .domain.domain == "eos")
             )
     )
+    
+    
