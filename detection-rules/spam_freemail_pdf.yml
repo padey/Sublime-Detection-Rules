@@ -1,6 +1,6 @@
-name: "Spam: attached PDF with commercial or spam"
+name: "Spam: Suspicious Short Email from Free-mail Domain with PDF Attachment"
 description: |
-    Short text email from a sender which is unknown with a freemail account. Attached is a pdf with commercial, spam, unwanted stuff. 
+    Detects inbound emails from either free-mail domains or non-whitelisted corporate domains that include only a PDF attachment (single or any PDF) and have fewer than 100 characters in the plain-text body. This minimal-text, PDF-only delivery is a common tactic for spam, unwanted commercial offers, and PDF-based phishing.
 type: "rule"
 severity: "low"
 authors:
