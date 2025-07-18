@@ -1,0 +1,29 @@
+name: "Spam: attached PDF with commercial or spam"
+description: |
+    Short text email from a sender which is unknown with a freemail account. Attached is a pdf with commercial, spam, unwanted stuff. 
+type: "rule"
+severity: "low"
+authors:
+  - twitter: "affje0x65"
+references:
+  - Internal Research
+source: |
+    type.inbound
+    and (
+      (
+        sender.email.domain.root_domain in $free_email_providers
+        and sender.email.email not in $sender_emails
+      )
+      or (
+        sender.email.domain.root_domain not in $free_email_providers
+        and sender.email.domain.domain not in $sender_domains
+      )
+    )
+    // attachment is pdf
+    
+        and (
+          length(attachments) == 1
+          or any(attachments, .file_type == 'pdf')
+        )
+    // short body, basically just the PDF
+    and length(body.plain.raw) < 100
