@@ -5,7 +5,7 @@ description: |
   Impersonates Microsoft / Office 365 and uses non trusted Links, mostly a phishing framework is used for this mails. 
 references:
   - internal
-severity: "critical"
+severity: "high"
 type: "rule"
 source: |
     type.inbound
@@ -38,12 +38,12 @@ source: |
     )
     and (
       (
-        profile.by_sender().prevalence in ("new", "outlier")
+        profile.by_sender_email().prevalence in ("new", "outlier")
         and not profile.by_sender().solicited
       )
       or (
         profile.by_sender().any_messages_malicious_or_spam
-        and not profile.by_sender().any_false_positives
+        and not profile.by_sender_email().any_messages_benign
       )
     )
     // negate highly trusted sender domains unless they fail DMARC authentication
@@ -57,4 +57,34 @@ source: |
         )
       )
       or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    )
+    // negate Org domains
+    and not (
+      any(headers.reply_to, .email.domain.root_domain in $org_domains)
+      or headers.return_path.domain.root_domain in $org_domains
+    )
+    and not any(beta.ml_topic(body.current_thread.text).topics,
+                .name in (
+                  "Advertising and Promotions",
+                  "Newsletters and Digests",
+                  "News and Current Events",
+                  "Events and Webinars",
+                  "Professional and Career Development",
+                  "Educational and Research",
+                  "Charity and Non-Profit",
+                  "Reminders and Notifications",
+                  "Health and Wellness",
+                  "Government Services",
+                  "Entertainment and Sports",
+                  "Social Media and Networking",
+                  "Political Mail",
+                  "Environmental and Sustainability",
+                  "Travel and Transportation",
+                  "Bounce Back and Delivery Failure Notifications",
+                  "B2B Cold Outreach",
+                  "Out of Office and Automatic Replies",
+                  "Emergency Alerts",
+                  "Government Services"
+                )
+                and .confidence != "low"
     )
