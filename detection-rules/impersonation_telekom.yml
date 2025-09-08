@@ -2,7 +2,7 @@ name: "Brand impersonation: Telekom"
 description: |
   Impersonation of the Deutsche Telekom.
 type: "rule"
-severity: "low"
+severity: "medium"
 source: |
   type.inbound
   and (
