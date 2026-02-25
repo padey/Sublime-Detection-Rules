@@ -7,9 +7,12 @@ type: "rule"
 severity: "high"
 source: |
   type.inbound
-  and any(headers.domains,
-          regex.icontains(.root_domain, "sendinblue.com")
-          and regex.icontains(.subdomain, "smtp-relay")
+  and (
+    any(headers.domains,
+        regex.icontains(.root_domain, "sendinblue.com")
+        and regex.icontains(.subdomain, "smtp-relay")
+    )
+    or headers.mailer == "Sendinblue"
   )
   and (
     profile.by_sender().prevalence in ("new")
