@@ -1,0 +1,90 @@
+name: "LLM / Clanker HTML Artifacts (Broad + Thread Aware)"
+description: |
+  Detects AI/LLM-generated HTML artifacts commonly observed in phishing campaigns, including prompt-leak HTML comments, template placeholders,  sloppy development artifacts, and related indicators.  Rule inspects both HTML body and current thread text and excludes  highly trusted sender domains unless DMARC authentication fails.
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - https://lukemadethat.substack.com/p/forgetful-foes-and-absentminded-advertisers
+source: |
+  type.inbound
+  and (
+
+    // =========================================================
+    // Prompt / Iterative-Conversation HTML Comments (Strong)
+    // =========================================================
+    strings.icontains(body.html.raw, '&lt;!-- styles removed as requested --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- font link removed as requested')
+    or strings.icontains(body.html.raw, '&lt;!-- main content would go here --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- only the pdf line is linked')
+    or strings.icontains(body.html.raw, '&lt;!-- thin divider')
+    or strings.icontains(body.html.raw, '&lt;!-- plain text message, exactly as requested --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- no footnote, no extra commentary')
+    or strings.icontains(body.html.raw, '&lt;!-- keeping exact same structure --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- download button (unchanged) --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- replace with your logo url --&gt;')
+    or strings.icontains(body.html.raw, '&lt;!-- replace with official')
+
+    // =========================================================
+    // Placeholder / Template Artifacts (FP-prone, useful for hunting)
+    // =========================================================
+    or strings.icontains(body.html.raw, '[your name]')
+    or strings.icontains(body.html.raw, '[company logo]')
+    or strings.icontains(body.html.raw, 'href="#"')
+    or strings.icontains(body.html.raw, 'src="https://example.com')
+    or strings.icontains(body.html.raw, 'https://example.com/logo.png')
+
+    // =========================================================
+    // Sloppy / Development Artifacts
+    // =========================================================
+    or strings.icontains(body.html.raw, 'localhost')
+
+    // =========================================================
+    // ===== Same IOCs observed in Current Thread Text =====
+    // =========================================================
+    or strings.icontains(body.current_thread.text, 'styles removed as requested')
+    or strings.icontains(body.current_thread.text, 'font link removed as requested')
+    or strings.icontains(body.current_thread.text, 'main content would go here')
+    or strings.icontains(body.current_thread.text, 'plain text message, exactly as requested')
+    or strings.icontains(body.current_thread.text, 'no footnote, no extra commentary')
+    or strings.icontains(body.current_thread.text, 'keeping exact same structure')
+
+    or strings.icontains(body.current_thread.text, '[your name]')
+    or strings.icontains(body.current_thread.text, '[company logo]')
+    or strings.icontains(body.current_thread.text, 'localhost')
+
+    // =========================================================
+    // Example lure keyword expansion (thread-level)
+    // =========================================================
+    or strings.icontains(body.current_thread.text, 'iphone')
+    or strings.icontains(body.current_thread.text, 'ipad')
+  )
+  and (
+    // =========================================================
+    // Negate highly trusted sender domains unless DMARC fails
+    // =========================================================
+    (
+      sender.email.domain.root_domain in $high_trust_sender_root_domains
+      and (
+        any(
+          distinct(headers.hops, .authentication_results.dmarc is not null),
+          strings.ilike(.authentication_results.dmarc, "*fail")
+        )
+      )
+    )
+    or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+  )
+attack_types:
+  - "Credential Phishing"
+  - "Malware/Ransomware"
+tactics_and_techniques:
+  - "Evasion"
+  - "Social Engineering"
+  - "Phishing"
+  - "HTML abuse"
+detection_methods:
+  - "Content analysis"
+  - "HTML analysis"
+  - "Heuristic analysis"
+  - "Template artifact analysis"
