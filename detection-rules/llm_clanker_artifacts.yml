@@ -25,6 +25,14 @@ source: |
     or strings.icontains(body.html.raw, '&lt;!-- download button (unchanged) --&gt;')
     or strings.icontains(body.html.raw, '&lt;!-- replace with your logo url --&gt;')
     or strings.icontains(body.html.raw, '&lt;!-- replace with official')
+    
+    // Current Thread
+    or strings.icontains(body.current_thread.text, 'styles removed as requested')
+    or strings.icontains(body.current_thread.text, 'font link removed as requested')
+    or strings.icontains(body.current_thread.text, 'main content would go here')
+    or strings.icontains(body.current_thread.text, 'plain text message, exactly as requested')
+    or strings.icontains(body.current_thread.text, 'no footnote, no extra commentary')
+    or strings.icontains(body.current_thread.text, 'keeping exact same structure')
 
     // =========================================================
     // Placeholder / Template Artifacts (FP-prone, useful for hunting)
@@ -34,31 +42,17 @@ source: |
     or strings.icontains(body.html.raw, 'href="#"')
     or strings.icontains(body.html.raw, 'src="https://example.com')
     or strings.icontains(body.html.raw, 'https://example.com/logo.png')
+    or strings.icontains(body.current_thread.text, '[your name]')
+    or strings.icontains(body.current_thread.text, '[company logo]')
 
     // =========================================================
     // Sloppy / Development Artifacts
     // =========================================================
     or strings.icontains(body.html.raw, 'localhost')
-
-    // =========================================================
-    // ===== Same IOCs observed in Current Thread Text =====
-    // =========================================================
-    or strings.icontains(body.current_thread.text, 'styles removed as requested')
-    or strings.icontains(body.current_thread.text, 'font link removed as requested')
-    or strings.icontains(body.current_thread.text, 'main content would go here')
-    or strings.icontains(body.current_thread.text, 'plain text message, exactly as requested')
-    or strings.icontains(body.current_thread.text, 'no footnote, no extra commentary')
-    or strings.icontains(body.current_thread.text, 'keeping exact same structure')
-
-    or strings.icontains(body.current_thread.text, '[your name]')
-    or strings.icontains(body.current_thread.text, '[company logo]')
     or strings.icontains(body.current_thread.text, 'localhost')
 
-    // =========================================================
-    // Example lure keyword expansion (thread-level)
-    // =========================================================
-    or strings.icontains(body.current_thread.text, 'iphone')
-    or strings.icontains(body.current_thread.text, 'ipad')
+
+
   )
   and (
     // =========================================================
