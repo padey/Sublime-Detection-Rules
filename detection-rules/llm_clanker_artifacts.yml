@@ -12,7 +12,7 @@ source: |
   and (
 
     // =========================================================
-    // Prompt / Iterative-Conversation HTML Comments (Strong)
+    // Prompt / Iterative-Conversation HTML Comments 
     // =========================================================
     strings.icontains(body.html.raw, '&lt;!-- styles removed as requested --&gt;')
     or strings.icontains(body.html.raw, '&lt;!-- font link removed as requested')
@@ -35,7 +35,7 @@ source: |
     or strings.icontains(body.current_thread.text, 'keeping exact same structure')
 
     // =========================================================
-    // Placeholder / Template Artifacts (FP-prone, useful for hunting)
+    // Placeholder / Template Artifacts
     // =========================================================
     or strings.icontains(body.html.raw, '[your name]')
     or strings.icontains(body.html.raw, '[company logo]')
@@ -50,9 +50,6 @@ source: |
     // =========================================================
     or strings.icontains(body.html.raw, 'localhost')
     or strings.icontains(body.current_thread.text, 'localhost')
-
-
-
   )
   and (
     // =========================================================
