@@ -1,0 +1,63 @@
+name: "Callback Phishing: Fake Insolvency Proceedings Asset Catalog"
+description: "This rule scans for a QR code or specific asset keywords in PDF attachments (e.g., Porsche, Gold bars) used in fraudulent insolvency proceedings. Attackers impersonate law firms like Gleiss Lutz or Noerr to trick users into SEPA payments via 'bank://' links."
+type: "rule"
+severity: "medium"
+authors:
+  - twitter: "affje0x65"
+references:
+  - "https://www.gleisslutz.com/de/know-how/vorsicht-betrug-premiumfahrzeuge-aus-insolvenzmasse-betrueger-geben-sich-als-gleiss-lutz-mitarbeiter-aus"
+  - "https://www.noerr.com/de/insights/warnung-gefaelschte-e-mails-mit-missbraeuchlicher-nutzung-des-namens-noerr"
+source: |
+  type.inbound
+  and (
+    (
+      profile.by_sender().prevalence in ("new", "outlier")
+      and not profile.by_sender().solicited
+    )
+    or profile.by_sender().any_messages_malicious_or_spam
+    or sender.email.domain.root_domain in (
+      "noerrr.com", 
+      "noerr-group.com", 
+      "gleiss-lutz.com.co", 
+      "gleisslutz-insolvenz.de",
+      "kanzlei-noerr.de",
+      "insolvenz-verwaltung.com"
+    )
+  )
+  and any(attachments,
+    .file_extension == "pdf"
+    and any(file.explode(.),
+      any(.scan.strings.strings,
+        strings.ilike(., 
+          "*ANLAGEGOLDBARREN*", 
+          "*Porsche Macan S*", 
+          "*FENDT 728 VARIO*", 
+          "*CASE 221F*", 
+          "*HITACHI ZX135*", 
+          "*CATERPILLAR 950GC*", 
+          "*MERCEDES-BENZ GLE 63*", 
+          "*PORSCHE 911 CARRERA*", 
+          "*SANY SY215C*", 
+          "*John Deere 9700i*",
+          "*WACKER NEUSON ET18*",
+          "*ZOOMLION ZE55GU*"
+        )
+      )
+      // Optional: Expliziter Check auf QR-Codes mit Banking-Schema
+      or any(.scan.qr_codes, strings.istarts_with(.value, "bank://"))
+    )
+  )
+
+attack_types:
+  - "BEC/Fraud"
+  - "Callback Phishing"
+tactics_and_techniques:
+  - "Impersonation: Brand"
+  - "Lookalike domain"
+  - "Out of band pivot"
+  - "PDF"
+  - "Social engineering"
+detection_methods:
+  - "Content analysis"
+  - "File analysis"
+  - "Sender analysis"
