@@ -43,8 +43,6 @@ source: |
           "*ZOOMLION ZE55GU*"
         )
       )
-      // Optional: Expliziter Check auf QR-Codes mit Banking-Schema
-      or any(.scan.qr_codes, strings.istarts_with(.value, "bank://"))
     )
   )
 
