@@ -1,0 +1,74 @@
+source: "type.inbound\n\n// CHEAP: Check for PDF attachment existence FIRST\nand length(attachments)
+  > 0\nand any(attachments, .file_extension == \"pdf\")\n\n// CHEAP: Sender reputation
+  checks\nand (\n  (\n    profile.by_sender().prevalence in (\"new\", \"outlier\")\n
+  \   and not profile.by_sender().solicited\n  )\n  or (\n    profile.by_sender().any_messages_malicious_or_spam\n
+  \   and not profile.by_sender().any_messages_benign\n  )\n)\n\n// SECTION 1: Geographic/identity
+  mismatch indicators\nand (\n  // Sender claims to be German entity (GmbH, AG, or
+  other German business forms)\n  (\n    strings.ilike(strings.replace_confusables(sender.display_name),
+  \"*GmbH*\")\n    // AG must be at word boundary and likely at end of name\n    or
+  regex.imatch(sender.display_name, '.*\\\\sAG\\\\s*$')\n    or regex.imatch(sender.display_name,
+  '.*\\\\sAG\\\\s[&\\\\-].*')\n    // Check for spaced versions like \"G.m.b.H\"\n
+  \   or regex.icontains(sender.display_name, 'G\\\\.?\\\\s*m\\\\.?\\\\s*b\\\\.?\\\\s*H')\n
+  \   or strings.ilike(sender.display_name, \"* mbH*\")\n    // Also check domain
+  SLD\n    or regex.imatch(sender.email.domain.sld, '.*(?:gmbh|ag)$')\n  )\n  \n  //
+  But sender domain is not German (.de TLD)\n  and sender.email.domain.tld != \"de\"\n
+  \ \n  // Targeting German recipients\n  and (\n    any(recipients.to, .email.domain.tld
+  == \"de\")\n    or any(recipients.cc, .email.domain.tld == \"de\")\n    or any(recipients.bcc,
+  .email.domain.tld == \"de\")\n  )\n)\n\n// SECTION 2: Commercial solicitation indicators\nand
+  (\n  // Contains product/inventory terminology in subject or body\n  (\n    regex.icontains(subject.subject,\n
+  \                  \"verkauf\",      // sale\n                   \"verwertung\",
+  \  // liquidation\n                   \"angebot\",      // offer\n                   \"insolvenz\"
+  \    // insolvency\n    )\n    // Use current_thread.text with fallback to plain.raw\n
+  \   or (\n      body.current_thread.text is not null\n      and length(body.current_thread.text)
+  > 0\n      and (\n        strings.icontains(body.current_thread.text, \"Insolvenzmasse\")\n
+  \       or strings.icontains(body.current_thread.text, \"Konditionen\")\n        or
+  strings.icontains(body.current_thread.text, \"Positionen\")\n      )\n    )\n    //
+  Fallback to plain.raw only if current_thread is empty\n    or (\n      (\n        body.current_thread.text
+  is null\n        or length(body.current_thread.text) == 0\n      )\n      and (\n
+  \       strings.icontains(body.plain.raw, \"Insolvenzmasse\")\n        or strings.icontains(body.plain.raw,
+  \"Konditionen\")\n        or strings.icontains(body.plain.raw, \"Positionen\")\n
+  \     )\n    )\n  )\n  \n  // Has PDF attachment with suspicious naming pattern\n
+  \ and any(attachments,\n          .file_extension == \"pdf\"\n          and (\n
+  \           // Very long numeric strings (10+ digits, unlikely to be dates)\n            regex.imatch(.file_name,
+  '.*-\\\\d{10,}\\\\.pdf$')\n            // OR random alphanumeric (not just dates)\n
+  \           or regex.imatch(.file_name, '.*-[a-f0-9]{12,}\\\\.pdf$')\n            //
+  OR German inventory terminology\n            or strings.ilike(.file_name, \"*verzeichnis*\",
+  \"*liste*\", \"*katalog*\")\n          )\n  )\n)\n\n// SECTION 3: Professional authority
+  impersonation (increases confidence)\nand (\n  // Claims legal/financial authority
+  role\n  strings.ilike(sender.display_name, \"*treuhand*\", \"*insolvenz*\", \"*verwalt*\")\n
+  \ \n  // OR references German legal codes in body\n  or (\n    body.current_thread.text
+  is not null\n    and length(body.current_thread.text) > 0\n    and regex.icontains(body.current_thread.text,\n
+  \                      \"§\\\\s*\\\\d+\\\\s*InsO\",    // Insolvency code\n                       \"gerichtlich\",
+  \         // court-appointed\n                       \"insolvenzverwalter\"    //
+  insolvency administrator\n    )\n  )\n  // Fallback to plain.raw\n  or (\n    (\n
+  \     body.current_thread.text is null\n      or length(body.current_thread.text)
+  == 0\n    )\n    and regex.icontains(body.plain.raw,\n                       \"§\\\\s*\\\\d+\\\\s*InsO\",\n
+  \                      \"gerichtlich\",\n                       \"insolvenzverwalter\"\n
+  \   )\n  )\n)\n\n// SECTION 4: False positive reduction\nand not (\n  // Exclude
+  legitimate German organizations\n  sender.email.domain.root_domain in $org_domains\n
+  \ \n  // Exclude established business relationships\n  or profile.by_sender().any_messages_benign\n
+  \ \n  // Exclude legitimate replies\n  or length(headers.references) > 0\n  \n  //
+  Exclude high-trust domains UNLESS they fail DMARC\n  or (\n    sender.email.domain.root_domain
+  in $high_trust_sender_root_domains\n    and headers.auth_summary.dmarc.pass\n  )\n
+  \ \n  // Exclude known false positives\n  or profile.by_sender().any_false_positives\n)\n"
+type: rule
+name: 'Spam: German legal/business entity impersonation from non-German domain'
+authors:
+- name: ADÉ
+description: "Detects spam campaigns impersonating German legal or business entities
+  (GmbH, AG) from non-German domains \ntargeting German recipients. These campaigns
+  typically involve unsolicited commercial solicitations for \nliquidation goods,
+  claiming professional authority (insolvency trustees, legal administrators) to gain
+  \ncredibility. The geographic mismatch (German entity name with non-.de domain)
+  combined with commercial \nsolicitation indicators and PDF attachments creates a
+  strong spam signal.\n\nObserved campaigns include impersonation of German insolvency
+  trustees from Argentinian domains (.com.ar) \nselling liquidation inventory to German
+  law firms. May generate rare false positives with legitimate \ninternational insolvency
+  firms, but these can be allowlisted if needed.\n"
+references: []
+tags:
+- 'Impersonation: Professional'
+- Geographic mismatch
+- Commercial solicitation
+- Unsolicited
+severity: medium

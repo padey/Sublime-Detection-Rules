@@ -1,0 +1,86 @@
+source: "type.inbound\n\n// SECTION 1: Sender validation\nand (\n  profile.by_sender().prevalence
+  in (\"new\", \"outlier\")\n  or not profile.by_sender().solicited\n  or (\n    profile.by_sender().any_messages_malicious_or_spam\n
+  \   and not profile.by_sender().any_false_positives\n  )\n)\n\n// SECTION 2: Volksbank/Raiffeisenbank
+  brand indicators\nand (\n  // Simple VR/Volksbank/Raiffeisenbank patterns\n  strings.ilike(sender.display_name,
+  \"*VR*\", \"*Volksbank*\", \"*Raiffeisenbank*\")\n  or strings.ilike(subject.subject,
+  \"*Volksbank*\", \"*Raiffeisenbank*\", \"*VR*Bank*\")\n  \n  // OR confusables in
+  sender components\n  or (\n    strings.icontains(strings.replace_confusables(sender.display_name),
+  \"volksbank\")\n    or strings.icontains(strings.replace_confusables(sender.display_name),
+  \"raiffeisenbank\")\n    or strings.icontains(sender.email.domain.sld, \"volksbank\")\n
+  \   or strings.icontains(sender.email.domain.sld, \"raiffeisenbank\")\n    or strings.ilevenshtein(sender.email.domain.sld,
+  \"volksbank\") <= 2\n    or strings.ilevenshtein(sender.email.domain.sld, \"raiffeisenbank\")
+  <= 2\n  )\n  \n  // OR logo detection\n  or any(ml.logo_detect(beta.message_screenshot()).brands,\n
+  \        .name in (\"Volksbank\", \"VR Bank\", \"Raiffeisenbank\") \n         and
+  .confidence in (\"medium\", \"high\")\n  )\n  \n  // OR brand name in body\n  or
+  (\n    body.current_thread.text is not null\n    and (\n      strings.icontains(body.current_thread.text,
+  \"Volksbank\")\n      or strings.icontains(body.current_thread.text, \"Raiffeisenbank\")\n
+  \     or strings.icontains(body.current_thread.text, \"VR-Bank\")\n    )\n  )\n)\n\n//
+  SECTION 3: Not from legitimate domains\nand (\n  sender.email.domain.root_domain
+  not in~ (\n    \"volksbank.de\", \"vr.de\", \"raiffeisenbank.de\", \"vrbank.de\",\n
+  \   \"vr-banking.de\", \"volksbank-raiffeisenbank.de\", \"vr-bank.de\"\n  )\n)\n\n//
+  SECTION 4: Suspicious links with banking patterns\nand (\n  length(body.links) >
+  0\n  and any(body.links,\n          // Suspicious domains with German banking terms\n
+  \         (\n            (\n              .href_url.domain.root_domain not in $tranco_1m\n
+  \             or .href_url.domain.tld in $suspicious_tlds\n              or .href_url.domain.root_domain
+  in $free_subdomain_hosts\n            )\n            and .href_url.domain.root_domain
+  not in~ (\n              \"volksbank.de\", \"vr.de\", \"raiffeisenbank.de\", \"vrbank.de\",\n
+  \             \"vr-banking.de\", \"volksbank-raiffeisenbank.de\", \"vr-bank.de\"\n
+  \           )\n            and (\n              // German banking terms in link
+  domain\n              strings.icontains(.href_url.domain.root_domain, \"konto\")\n
+  \             or strings.icontains(.href_url.domain.root_domain, \"bank\")\n              or
+  strings.icontains(.href_url.domain.root_domain, \"sicher\")\n              or strings.icontains(.href_url.domain.root_domain,
+  \"verif\")\n              or strings.icontains(.href_url.domain.root_domain, \"daten\")\n
+  \             // German banking terms in link text\n              or strings.ilike(.display_text,
+  \n                               \"*anmelden*\", \"*einloggen*\", \"*konto*\",\n
+  \                              \"*best*tigen*\", \"*verl*ngerung*\", \"*aktualisieren*\",\n
+  \                              \"*durchf*hren*\", \"*pr*fen*\"\n              )\n
+  \             // Generic credential phishing patterns\n              or regex.icontains(.display_text,
+  \"log.?in\", \"sign.?in\", \"verify\", \"update\", \"confirm\")\n              or
+  regex.icontains(.href_url.path, \"login\", \"signin\", \"verify\", \"account\",
+  \"secure\")\n            )\n          )\n          \n          // OR recipient email
+  in link (high-confidence targeting)\n          or any(recipients.to,\n                 .email.domain.valid\n
+  \                and (\n                   strings.icontains(..href_url.url, .email.email)\n
+  \                  or strings.icontains(..href_url.fragment, .email.email)\n                 )\n
+  \         )\n  )\n)\n\n// SECTION 5: Urgency indicators\nand (\n  // German urgency
+  patterns in subject\n  strings.ilike(subject.subject, \"*Dringend*\", \"*Wichtig*\",
+  \"*Sofort*\")\n  // OR German urgency patterns in body\n  or (\n    body.current_thread.text
+  is not null\n    and regex.icontains(body.current_thread.text,\n                       \"l.uft.*aus\",
+  \          // expires\n                       \"24.stunden\",           // 24 hours
+  \ \n                       \"sofort\",               // immediately\n                       \"umgehend\",
+  \            // immediately\n                       \"innerhalb.*stunden\"    //
+  within hours\n    )\n  )\n  // OR generic banking urgency in subject\n  or strings.ilike(subject.subject,
+  \"*Konto*\", \"*Daten*\", \"*Sicherheit*\")\n)\n\n// SECTION 6: False positive reduction\nand
+  not (\n  // Legitimate replies\n  (\n    length(headers.references) > 0\n    or
+  any(headers.hops, any(.fields, strings.ilike(.name, \"In-Reply-To\")))\n  )\n  \n
+  \ // Newsletters and financial news legitimately mention banks\n  or any(beta.ml_topic(body.current_thread.text).topics,\n
+  \        .name in (\n           \"Newsletters and Digests\",\n           \"News
+  and Current Events\",\n           \"Financial Communications\"\n         )\n         and
+  .confidence == \"high\"\n  )\n  \n  // Organizational domains with passing authentication\n
+  \ or (\n    sender.email.domain.domain in $org_domains\n    and headers.auth_summary.spf.pass\n
+  \   and headers.auth_summary.dmarc.pass\n  )\n  \n  // Bounce-backs\n  or (\n    strings.like(sender.email.local_part,\n
+  \                \"*postmaster*\", \"*mailer-daemon*\", \"*administrator*\"\n    )\n
+  \   and any(attachments,\n            .content_type in (\"message/rfc822\", \"message/delivery-status\")\n
+  \   )\n  )\n  \n  // Known good sender history\n  or profile.by_sender().any_false_positives\n)\n\n//
+  SECTION 7: High trust domain authentication check\nand (\n  (\n    sender.email.domain.root_domain
+  in $high_trust_sender_root_domains\n    and not headers.auth_summary.dmarc.pass\n
+  \ )\n  or sender.email.domain.root_domain not in $high_trust_sender_root_domains\n)\n"
+type: rule
+name: 'Brand Impersonation: Volksbank/Raiffeisenbank German Banking Phishing'
+authors:
+- name: ADÉ
+description: |
+  Detects credential phishing attacks impersonating German Volksbank/Raiffeisenbank banks.
+  This rule identifies messages claiming to be from VR, Volksbank, or Raiffeisenbank brands
+  but originating from non-legitimate domains with suspicious links containing German banking
+  terms (konto, daten, sicherheit) and urgency tactics. The attack typically references fake
+  German banking laws (e.g., Bundesbankengesetz) and creates artificial deadlines (24 hours)
+  to pressure victims into clicking phishing links for account verification.
+
+  Common indicators include generic phishing domains like "konto-daten-pruefen.de" (account-data-verification)
+  sent via legitimate email infrastructure (Amazon SES) to bypass authentication checks.
+references: []
+tags:
+- 'Impersonation: Brand'
+- German language
+- Banking
+severity: high

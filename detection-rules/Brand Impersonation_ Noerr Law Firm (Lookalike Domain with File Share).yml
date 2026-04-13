@@ -1,0 +1,45 @@
+source: "type.inbound\n\n// SECTION 1: Lookalike domain detection with Unicode normalization\nand
+  (\n  // Detect domains with Levenshtein distance <= 2 to \"noerr\" after normalizing
+  confusables\n  strings.ilevenshtein(strings.replace_confusables(sender.email.domain.sld),
+  \"noerr\") <= 2\n  and sender.email.domain.root_domain not in (\n    \"noerr.de\",\n
+  \   \"noerr.com\",\n    \"noerr.ch\",\n    \"noerr.at\",\n    \"noerr.eu\",\n    \"noerr.info\"\n
+  \ )\n)\n\n// SECTION 2: Brand impersonation indicators (with confusables)\nand (\n
+  \ // Brand name in display name (normalized)\n  strings.icontains(strings.replace_confusables(sender.display_name),
+  \"noerr\")\n  \n  // OR brand name in body content with organization context\n  or
+  (\n    strings.icontains(body.current_thread.text, \"NOERR\")\n    or strings.icontains(body.current_thread.text,
+  \"Noerr Partnerschaftsgesellschaft\")\n  )\n)\n\n// SECTION 3: Suspicious file sharing
+  link (specific patterns)\nand (\n  length(body.links) > 0\n  and any(body.links,
+  \n      // Specific Google Drive/Docs file sharing patterns\n      .href_url.domain.domain
+  in (\"docs.google.com\", \"drive.google.com\", \"share.google\")\n      or (\n        .href_url.domain.root_domain
+  == \"google.com\"\n        and (\n          strings.istarts_with(.href_url.path,
+  \"/file/d/\")\n          or strings.istarts_with(.href_url.path, \"/document/d/\")\n
+  \         or strings.istarts_with(.href_url.path, \"/spreadsheets/d/\")\n          or
+  strings.icontains(.href_url.query_params, \"usp=sharing\")\n          or strings.icontains(.href_url.query_params,
+  \"usp=drive_link\")\n        )\n      )\n  )\n)\n\n// SECTION 4: Sender reputation
+  checks\nand (\n  // New or unsolicited sender\n  profile.by_sender().prevalence
+  in (\"new\", \"outlier\")\n  or not profile.by_sender().solicited\n)\n\n// SECTION
+  5: Authentication validation\nand (\n  // If from high trust domain, must pass DMARC\n
+  \ (\n    sender.email.domain.root_domain in $high_trust_sender_root_domains\n    and
+  not headers.auth_summary.dmarc.pass\n  )\n  // OR not from high trust domain at
+  all\n  or sender.email.domain.root_domain not in $high_trust_sender_root_domains\n)\n\n//
+  SECTION 6: False positive reduction\nand not (\n  // Exclude legitimate replies\n
+  \ length(headers.references) > 0\n  \n  // OR known benign sender\n  or profile.by_sender().any_messages_benign\n)\n"
+type: rule
+name: 'Brand Impersonation: Noerr Law Firm (Lookalike Domain with File Share)'
+authors:
+- name: ADÉ
+description: |
+  Detects lookalike domain impersonation of German law firm Noerr, specifically
+  targeting attacks using "noerrr.de" (3 r's) or similar typosquatted domains.
+  Attackers combine lookalike domains with Google Drive/Docs file sharing links
+  and professional German legal content to target law firm employees and clients.
+
+  The rule uses Levenshtein distance to detect character addition typosquatting,
+  normalizes Unicode confusables to prevent homograph attacks, and validates
+  against multiple indicators including brand impersonation in display names,
+  file sharing service abuse, and sender reputation.
+references: []
+tags:
+- 'Impersonation: Brand'
+- Lookalike domain
+severity: medium
