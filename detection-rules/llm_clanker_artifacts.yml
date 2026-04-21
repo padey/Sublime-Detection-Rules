@@ -7,64 +7,100 @@ authors:
   - twitter: "affje0x65"
 references:
   - https://lukemadethat.substack.com/p/forgetful-foes-and-absentminded-advertisers
+  - https://blog.talosintelligence.com/seasoning-email-threats-with-hidden-text-salting/
 source: |
   type.inbound
-  and (
-
-    // =========================================================
-    // Prompt / Iterative-Conversation HTML Comments 
-    // =========================================================
-    strings.icontains(body.html.raw, '&lt;!-- styles removed as requested --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- font link removed as requested')
-    or strings.icontains(body.html.raw, '&lt;!-- main content would go here --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- only the pdf line is linked')
-    or strings.icontains(body.html.raw, '&lt;!-- thin divider')
-    or strings.icontains(body.html.raw, '&lt;!-- plain text message, exactly as requested --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- no footnote, no extra commentary')
-    or strings.icontains(body.html.raw, '&lt;!-- keeping exact same structure --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- download button (unchanged) --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- replace with your logo url --&gt;')
-    or strings.icontains(body.html.raw, '&lt;!-- replace with official')
-    
-    // Current Thread
-    or strings.icontains(body.current_thread.text, 'styles removed as requested')
-    or strings.icontains(body.current_thread.text, 'font link removed as requested')
-    or strings.icontains(body.current_thread.text, 'main content would go here')
-    or strings.icontains(body.current_thread.text, 'plain text message, exactly as requested')
-    or strings.icontains(body.current_thread.text, 'no footnote, no extra commentary')
-    or strings.icontains(body.current_thread.text, 'keeping exact same structure')
-
-    // =========================================================
-    // Placeholder / Template Artifacts
-    // =========================================================
-    or strings.icontains(body.html.raw, '[your name]')
-    or strings.icontains(body.html.raw, '[company logo]')
-    or strings.icontains(body.html.raw, 'href="#"')
-    or strings.icontains(body.html.raw, 'src="https://example.com')
-    or strings.icontains(body.html.raw, 'https://example.com/logo.png')
-    or strings.icontains(body.current_thread.text, '[your name]')
-    or strings.icontains(body.current_thread.text, '[company logo]')
-
-    // =========================================================
-    // Sloppy / Development Artifacts
-    // =========================================================
-    or strings.icontains(body.html.raw, 'localhost')
-    or strings.icontains(body.current_thread.text, 'localhost')
-  )
-  and (
-    // =========================================================
-    // Negate highly trusted sender domains unless DMARC fails
-    // =========================================================
-    (
-      sender.email.domain.root_domain in $high_trust_sender_root_domains
-      and (
-        any(
-          distinct(headers.hops, .authentication_results.dmarc is not null),
-          strings.ilike(.authentication_results.dmarc, "*fail")
+    and (
+  
+      // =========================================================
+      // Prompt / Iterative-Conversation HTML Comments
+      // =========================================================
+      strings.icontains(body.html.raw, '<!-- styles removed as requested -->')
+      or strings.icontains(body.html.raw, '<!-- font link removed as requested')
+      or strings.icontains(body.html.raw, '<!-- main content would go here -->')
+      or strings.icontains(body.html.raw, '<!-- only the pdf line is linked')
+      or strings.icontains(body.html.raw, '<!-- thin divider')
+      or strings.icontains(body.html.raw, '<!-- plain text message, exactly as requested -->')
+      or strings.icontains(body.html.raw, '<!-- no footnote, no extra commentary')
+      or strings.icontains(body.html.raw, '<!-- keeping exact same structure -->')
+      or strings.icontains(body.html.raw, '<!-- download button (unchanged) -->')
+      or strings.icontains(body.html.raw, '<!-- replace with your logo url -->')
+      or strings.icontains(body.html.raw, '<!-- replace with official')
+  
+      // Current Thread
+      or strings.icontains(body.current_thread.text, 'styles removed as requested')
+      or strings.icontains(body.current_thread.text, 'font link removed as requested')
+      or strings.icontains(body.current_thread.text, 'main content would go here')
+      or strings.icontains(body.current_thread.text, 'plain text message, exactly as requested')
+      or strings.icontains(body.current_thread.text, 'no footnote, no extra commentary')
+      or strings.icontains(body.current_thread.text, 'keeping exact same structure')
+  
+      // =========================================================
+      // Placeholder / Template Artifacts
+      // =========================================================
+      or strings.icontains(body.html.raw, '[your name]')
+      or strings.icontains(body.html.raw, '[company logo]')
+      or strings.icontains(body.html.raw, 'href="#"')
+      or strings.icontains(body.html.raw, 'src="https://example.com')
+      or strings.icontains(body.html.raw, 'https://example.com/logo.png')
+      or strings.icontains(body.html.raw, '[Recipient Name]')
+      or strings.icontains(body.html.raw, '[Company Name]')
+      or strings.icontains(body.html.raw, '[Your Company Name]')
+      or strings.icontains(body.html.raw, '[Insert Link Here]')
+      or strings.icontains(body.html.raw, '[Date of suspicious activity]')
+      or strings.icontains(body.html.raw, '[Time of suspicious activity]')
+      or strings.icontains(body.html.raw, '[Location of suspicious activity]')
+      or strings.icontains(body.html.raw, '[Device used for suspicious activity]')
+      or strings.icontains(body.html.raw, '[Description of suspicious activity')
+      or strings.icontains(body.html.raw, '[ccount]')
+      or strings.icontains(body.current_thread.text, '[your name]')
+      or strings.icontains(body.current_thread.text, '[company logo]')
+      or strings.icontains(body.current_thread.text, '[Recipient Name]')
+      or strings.icontains(body.current_thread.text, '[Company Name]')
+      or strings.icontains(body.current_thread.text, '[Your Company Name]')
+      or strings.icontains(body.current_thread.text, '[Insert Link Here]')
+      or strings.icontains(body.current_thread.text, '[Date of suspicious activity]')
+      or strings.icontains(body.current_thread.text, '[Time of suspicious activity]')
+      or strings.icontains(body.current_thread.text, '[Location of suspicious activity]')
+      or strings.icontains(body.current_thread.text, '[Device used for suspicious activity]')
+      or strings.icontains(body.current_thread.text, '[Description of suspicious activity')
+      or strings.icontains(body.current_thread.text, '[ccount]')
+  
+      // =========================================================
+      // Sloppy / Development Artifacts
+      // =========================================================
+      or strings.icontains(body.html.raw, 'localhost')
+      or strings.icontains(body.current_thread.text, 'localhost')
+  
+      // =========================================================
+      // Invisible Character / Hash-Busting Salt
+      // =========================================================
+      or strings.icontains(body.html.raw, '=CD=8F')
+      or strings.icontains(body.html.raw, '=E2=80=8C')
+      or strings.icontains(body.html.raw, '=C2=AD')
+    )
+    and (
+      // =========================================================
+      // Negate highly trusted sender domains unless DMARC fails
+      // =========================================================
+      (
+        sender.email.domain.root_domain in $high_trust_sender_root_domains
+        and (
+          any(
+            distinct(headers.hops, .authentication_results.dmarc is not null),
+            strings.ilike(.authentication_results.dmarc, "*fail")
+          )
         )
       )
+      or sender.email.domain.root_domain not in $high_trust_sender_root_domains
     )
-    or sender.email.domain.root_domain not in $high_trust_sender_root_domains
+    and (
+    profile.by_sender_email().prevalence in ("new", "outlier", "rare")
+    or not profile.by_sender_email().solicited
+    or (
+      profile.by_sender_email().any_messages_malicious_or_spam
+      and not profile.by_sender_email().any_messages_benign
+    )
   )
 attack_types:
   - "Credential Phishing"
