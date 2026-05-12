@@ -9,7 +9,7 @@ description: |
 type: "rule"
 severity: "high"
 authors:
-  - name: "affjex065"
+  - twitter: "affje0x65"
 references:
   - "https://www.keppler-it.de/blog/2024-01-bewerbungsflut/"
   - "https://www.antispam-ev.de/forum/showthread.php?43358-Initiativbewerbung-als-Nennung-verschiedener-Berufe"
