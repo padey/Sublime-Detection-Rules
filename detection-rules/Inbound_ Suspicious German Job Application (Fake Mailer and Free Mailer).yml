@@ -1,30 +1,58 @@
-source: "type.inbound\r\nand (\r\n  strings.ilike(headers.mailer,\r\n                \"Microsoft
-  CDO for Windows 2000\",\r\n                \"PHPMailer*\",\r\n                \"nodemailer*\",\r\n
-  \               \"Python-urllib*\",\r\n                \"GuzzleHttp*\"\r\n  )\r\n)\r\nand
-  (\r\n  sender.email.domain.domain in $free_email_providers\r\n  or sender.email.domain.root_domain
-  in ('firemail.de', 'web.de', 'gmx.de')\r\n)\r\nand any(attachments,\r\n  (\r\n    .file_extension
-  == \"pdf\" \r\n    or .file_type == \"pdf\"\r\n  )\r\n  and (\r\n    strings.ilike(.file_name,
-  \"*Lebenslauf*\", \"*Zeugnis*\", \"*Bewerbung*\", \"*CV*\")\r\n  )\r\n)\r\n// Sicherstellen,
-  dass wir keine Historie mit dem Absender haben\r\nand not profile.by_sender().any_messages_benign\r\nand
-  not profile.by_sender().solicited"
-type: rule
-name: 'Suspicious German Job Application (Fake Mailer & Free Mailer)'
+name: "Suspicious German Job Application (Fake Mailer & Free Mailer)"
+description: |
+  This rule detects automated malicious email campaigns disguised as German job applications ("Bewerbungen"). 
+  These campaigns frequently exploit free email providers (specifically highlighting firemail.de, web.de, and gmx.de) 
+  and are dispatched via programmatic mailers like PHPMailer or nodemailer, as documented in recent German 
+  "Bewerbungsflut" (application flood) malware trends. It identifies incoming messages containing PDF 
+  attachments with recruitment-related keywords (e.g., Lebenslauf, Zeugnisse) from senders with no prior 
+  benign interaction history.
+type: "rule"
+severity: "high"
 authors:
-- name: Patrick Stanullo
-description: |-
-  This rule detects automated malicious email campaigns disguised as German job
-  applications ("Bewerbungen"). These campaigns frequently exploit free email providers
-  (specifically highlighting firemail.de, web.de, and gmx.de) and are dispatched via
-  programmatic mailers like PHPMailer or nodemailer, as documented in recent German
-  "Bewerbungsflut" (application flood) malware trends. It identifies incoming messages
-  containing PDF attachments with recruitment-related keywords (e.g., Lebenslauf,
-  Zeugnisse) from senders with no prior benign interaction history. This pattern is often
-  used to distribute malware loaders or initiate social engineering attacks.
-references: []
+  - name: "affjex065"
+references:
+  - "https://www.keppler-it.de/blog/2024-01-bewerbungsflut/"
+  - "https://www.antispam-ev.de/forum/showthread.php?43358-Initiativbewerbung-als-Nennung-verschiedener-Berufe"
+  - "https://github.com/padey/Sublime-Detection-Rules/tree/main/detection-rules"
+source: |
+  type.inbound
+  and (
+    strings.ilike(headers.mailer,
+                  "Microsoft CDO for Windows 2000",
+                  "PHPMailer*",
+                  "nodemailer*",
+                  "Python-urllib*",
+                  "GuzzleHttp*"
+    )
+  )
+  and (
+    sender.email.domain.domain in $free_email_providers
+    or sender.email.domain.root_domain in ('firemail.de', 'web.de', 'gmx.de')
+  )
+  and any(attachments,
+    (
+      .file_extension == "pdf" 
+      or .file_type == "pdf"
+    )
+    and (
+      strings.ilike(.file_name, "*Lebenslauf*", "*Zeugnis*", "*Bewerbung*", "*CV*")
+    )
+  )
+  // Ensure no prior history with the sender
+  and not profile.by_sender().any_messages_benign
+  and not profile.by_sender().solicited
 tags:
-- Callback Phishing
-- Phishing
-- Malware
-- Initial Access
-- German Language
-severity: high
+  - "Phishing"
+  - "Malware"
+  - "Initial Access"
+  - "German Language"
+attack_types:
+  - "Malware/Ransomware"
+tactics_and_techniques:
+  - "Evasion"
+  - "PDF"
+  - "Social Engineering"
+detection_methods:
+  - "File analysis"
+  - "Header analysis"
+  - "Sender analysis"
