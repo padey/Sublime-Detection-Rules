@@ -8,7 +8,7 @@ source: "type.inbound\r\nand (\r\n  strings.ilike(headers.mailer,\r\n           
   dass wir keine Historie mit dem Absender haben\r\nand not profile.by_sender().any_messages_benign\r\nand
   not profile.by_sender().solicited"
 type: rule
-name: 'Inbound: Suspicious German Job Application (Fake Mailer & Free Mailer)'
+name: 'Suspicious German Job Application (Fake Mailer & Free Mailer)'
 authors:
 - name: Patrick Stanullo
 description: |-
