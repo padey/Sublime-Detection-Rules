@@ -40,7 +40,6 @@ source: |
       // =========================================================
       or strings.icontains(body.html.raw, '[your name]')
       or strings.icontains(body.html.raw, '[company logo]')
-      or strings.icontains(body.html.raw, 'href="#"')
       or strings.icontains(body.html.raw, 'src="https://example.com')
       or strings.icontains(body.html.raw, 'https://example.com/logo.png')
       or strings.icontains(body.html.raw, '[Recipient Name]')
